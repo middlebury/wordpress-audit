@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="x-ua-compatible" content="ie=edge">
+  <title>{% block title %}{{ title }}{% endblock %}</title>
+  {% block metatags %}
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+  {% endblock %}
+  {% block stylesheets %}
+    <link rel="stylesheet" href="{{ asset('//cdn.middlebury.edu/middlebury.edu/2015/css/responsive.css') }}">
+  {% endblock %}
+</head>
+<body>
+  <div class="container">
+
+    <header class="global-header">
+
+      <div class="row">
+        <div class="col-xs-6 col-md-12">
+          <div class="global-header__logo">
+            <div itemscope itemtype="http://schema.org/Organization">
+              <a itemprop="url" href="http://www.middlebury.edu">
+                <img itemprop="logo" src="{{ asset('http://cdn.middlebury.edu/middlebury.edu/2010/images/logo.png') }}" alt="Middlebury">
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-6 col-md-12">
+          <div class="global-header__menu-btn">
+            <a href="#" class="js-menu-btn">
+              <span class="icon icon--menu"></span>
+            </a>
+          </div>
+        </div>
+      </div>
+
+      <div class="global-nav">
+
+        <div class="global-header__search">
+          <form class="search-form" id="midd_search">
+            <label for="midd_search_query" class="search-form__label sr-only">Search</label>
+            <input type="search" placeholder="Search Midd" class="search-form__input" id="midd_search_query">
+            <button type="submit" class="search-form__button">
+              <span class="icon icon--search">Search</span>
+            </button>
+          </form>
+        </div>
+
+        <ul class="global-nav__list global-nav__list--top">
+          <li><a href="">Admissions</a></li>
+          <li><a href="">Academics</a></li>
+          <li><a href="">Student Life</a></li>
+          <li><a href="">Athletics</a></li>
+          <li><a href="">Arts</a></li>
+          <li><a href="">Middlebury International</a></li>
+        </ul>
+        <ul class="global-nav__list global-nav__list--bottom">
+          <li><a href="">About Middlebury</a></li>
+          <li><a href="">Sustainability</a></li>
+          <li><a href="">Giving</a></li>
+          <li><a href="">News Room</a></li>
+          <li><a href="">Calendar of Events</a></li>
+          <li><a href="">Offices &amp; Services</a></li>
+        </ul>
+        <nav class="leftlinks">
+          <a href="http://go.middlebury.edu/mail">WebMail</a>
+          <a href="http://go.middlebury.edu/bw">BannerWeb</a>
+          <a href="http://go.middlebury.edu/portal">Portal</a>
+        </nav>
+      </div>
+
+    </header>
+
+  </div>
+  <article class="pagecontent" id="main-content">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <nav class="taskbar">
+            {% block taskbar %}
+              <a href="#" class="taskbar_back">&larr; Return to the <strong>Middlebury Homepage</strong></a>
+            {% endblock %}
+          </nav>
+
+          <div class="page">
+            <div class="row">
+              <div class="col-xs-12 col-md-8 col-lg-12">
+
+                <nav class="breadcrumb">
+                  {% block breadcrumb %}
+                    <a href="/">Home</a> &raquo; Department Name
+                  {% endblock %}
+                </nav>
+
+                <a href="#midd-pagemenu" class="jumpnav-anchor">Jump to navigation &darr;</a>
+
+                <header>
+                  <h1>{{ title }}</h1>
+                </header>
+
+                <div class="region region-content">
+
+                  {% block content %}{% endblock %}
+
+                </div>
+
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </article>
+  <footer class="global-footer">
+    <div class="container">
+      <div class="row">
+        <div class="col-xs-12">
+          <ul class="global-footer__audience-list">
+            <li><a href="">Current Students</a></li>
+            <li><a href="">Parents</a></li>
+            <li><a href="">Faculty &amp; Staff</a></li>
+          </ul>
+        </div>
+        <div class="col-xs-12 col-md-6">
+          <h3>Alumni</h3>
+          <ul>
+            <li><a href="">Middlebury College</a></li>
+            <li><a href="">Middlebury Language Schools</a></li>
+            <li><a href="">Middlebury Bread Loaf School of English</a></li>
+            <li><a href="">Middlebury Institute of International Studies at Monterey</a></li>
+          </ul>
+        </div>
+        <div class="col-xs-12 col-md-6">
+          <h3>Quick Links</h3>
+
+          <div class="row">
+            <div class="col-xs-12 col-sm-6">
+              <ul>
+                <li><a href="">Emergency</a></li>
+                <li><a href="">BannerWeb</a></li>
+                <li><a href="">Webmail</a></li>
+                <li><a href="">Directory</a></li>
+                <li><a href="">Library</a></li>
+                <li><a href="">Technology Help</a></li>
+                <li><a href="">Academic Calendar</a></li>
+                <li><a href="">About this Site</a></li>
+              </ul>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <ul>
+                <li><a href="">Job Seekers</a></li>
+                <li><a href="">Bookstore</a></li>
+                <li><a href="">Box Office</a></li>
+                <li><a href="">Museum of Art</a></li>
+                <li><a href="">Campus Map</a></li>
+                <li><a href="">Privacy</a></li>
+                <li><a href="">Copyright</a></li>
+                <li><a href="">EthicsPoint</a></li>
+              </ul>
+            </div>
+          </div>
+        </div>
+        <div class="col-xs-12">
+          <h3>Directions &amp; Contact Information</h3>
+
+          <div class="row">
+            <div class="col-xs-12 col-sm-6">
+              <p><a href="">Directory</a></p>
+              <p><a href="">Directions to Middlebury</a></p>
+              <p><a href="">Transportation Options</a></p>
+              <h4>Mailing Address</h4>
+              <p>Middlebury College <br>Middlebury, Vermont 05753 <br>802-443-5000</p>
+            </div>
+            <div class="col-xs-12 col-sm-6">
+              <h4>Admissions</h4>
+              <p>
+                <a href="tel:">802-443-3000</a><br>
+                <a href="mailto:admissions@middlebury.edu">admissions@middlebury.edu</a>
+              </p>
+
+              <h4>Public Safety</h4>
+              <p>
+                <a href="tel:">802-443-5911</a><br>
+                <a href="mailto:publicsafety@middlebury.edu"> publicsafety@middlebury.edu</a>
+              </p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+      <div class="row">
+        <div class="col-xs-12">
+          <p class="global-footer__copyright">&copy; 2016 The President and Fellows of Middlebury College. All rights reserved.</p>
+        </div>
+      </div>
+    </div>
+  </footer>
+  <div class="menu-overlay js-menu-overlay"></div>
+  {% block javascripts %}
+    <script src="{{ asset('https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js') }}"></script>
+    <script src="{{ asset('//cdn.middlebury.edu/middlebury.edu/2015/js/responsive.js') }}"></script>
+  {% endblock %}
+</body>
+</html>
