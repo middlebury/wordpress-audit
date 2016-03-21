@@ -4,7 +4,7 @@
 parameters:
     database_host:     127.0.0.1
     database_port:     ~
-    database_name:     symfony
+    database_name:     wordpress-audit
     database_user:     root
     database_password: ~
     # You should uncomment this if you want use pdo_sqlite
@@ -14,6 +14,22 @@ parameters:
     mailer_host:       127.0.0.1
     mailer_user:       ~
     mailer_password:   ~
+
+    # Edit the list below to include your WordPress database information.
+    # The composer script doesn't seem to like nested parameters, so you'll need to edit parameters.yml after running "composer install" and update the values there.
+    wordpresses:
+      sub.first-domain.com:
+        database_host:      127.0.0.1
+        database_post:      ~
+        database_name:      wordpress
+        database_user:      root
+        database_password:  ~
+      sub.second-domain.com:
+        database_host:      127.0.0.1
+        database_post:      ~
+        database_name:      wordpress
+        database_user:      root
+        database_password:  ~
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt
