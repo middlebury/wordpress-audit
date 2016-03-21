@@ -36,7 +36,8 @@ class PluginsController extends Controller
             } else if (!empty($plugin_data->no_update[$plugin])) {
                 $record = get_object_vars($plugin_data->no_update[$plugin]);
             } else {
-                $record['slug'] = substr($plugin, 0, strpos($plugin, '/'));
+                $slugs = preg_split('/\//', $plugin);
+                $record['slug'] = $slugs[0];
             }
             $record['version'] = $version;
             $plugins[] = $record;
