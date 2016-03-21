@@ -1,0 +1,51 @@
+{% extends 'midd.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/css/jquery.dataTables.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; {{ title }}
+{% endblock %}
+
+{% block content %}
+  <table id="wordpress-audit-themes">
+    <thead>
+      <tr>
+        <th>Name</th>
+        <th>Author</th>
+        <th>Installed Version</th>
+        <th>Available Version</th>
+        <th>Updated</th>
+        <th>Permissions</th>
+        <th>Number of Sites</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for theme in themes %}
+        <tr>
+          <td><a href="{{ path('show_theme', {'themeName': theme }) }}">{{ theme }}</a></td>
+          <td>Michael Middlebury</td>
+          <td>{{ random(9) }}</td>
+          <td>{{ random(9) }}</td>
+          <td>{{ 'now'|date('Y-m-d') }}</td>
+          <td>All Users</td>
+          <td>{{ random(3999) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/js/jquery.dataTables.js') }}"></script>
+  <script>
+    $(document).ready(function() {
+      $('#wordpress-audit-themes').DataTable({
+        paginate: false,
+      });
+    });
+  </script>
+{% endblock %}
