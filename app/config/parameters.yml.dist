@@ -24,12 +24,20 @@ parameters:
         database_name:      wordpress
         database_user:      root
         database_password:  ~
+        install_path:       /var/www/html/wordpress/.git
+        branches:
+          - 'origin/plugins'
+          - 'origin/master'
       sub.second-domain.com:
         database_host:      127.0.0.1
         database_post:      ~
         database_name:      wordpress
         database_user:      root
         database_password:  ~
+        install_path:       /var/www/html/wordpress/.git
+        branches:
+          - 'origin/plugins'
+          - 'origin/master'
 
     # A secret key that's used to generate certain security-related tokens
     secret:            ThisTokenIsNotSoSecretChangeIt

@@ -11,13 +11,13 @@
     <dd>Michael Middlebury</dd>
 
     <dt>Installed Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ plugin.installedVersion }}</dd>
 
     <dt>Available Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ plugin.availableVersion }}</dd>
 
     <dt>Updated</dt>
-    <dd>{{ 'now'|date('Y-m-d') }}</dd>
+    <dd>{{ plugin.updated|date('Y-m-d') }}</dd>
 
     <dt>Permissions</dt>
     <dd>All Users</dd>
@@ -44,7 +44,7 @@
   <form>
     <p>
       <label for="wordpress-audit-note-name">Plugin</label>
-      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ name }}" />
+      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ plugin.name }}" />
     </p>
 
     <p>

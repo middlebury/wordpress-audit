@@ -29,7 +29,7 @@
           <td>Michael Middlebury</td>
           <td>{{ plugin.installedVersion is not null ? plugin.installedVersion : '' }}</td>
           <td>{{ plugin.availableVersion is not null ? plugin.availableVersion : '' }}</td>
-          <td>{{ 'now'|date('Y-m-d') }}</td>
+          <td>{{ plugin.updated|date('Y-m-d') }}</td>
           <td>All Users</td>
           <td>{{ random(3999) }}</td>
         </tr>

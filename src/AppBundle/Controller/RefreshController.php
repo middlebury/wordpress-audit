@@ -7,6 +7,7 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\Process\ProcessBuilder;
 use \PDO;
 
 class RefreshController extends Controller
@@ -27,6 +28,8 @@ class RefreshController extends Controller
             ->getRepository('AppBundle:Plugin')
             ->findAll();
 
+        $update_command = 'git --git-dir=/home/imcbride/private_html/middwp/.git log -1 --format=%cd origin/plugins -- wp-content/plugins/';
+
         $em = $this->getDoctrine()->getManager();
 
         foreach ($plugins as $plugin) {
@@ -46,6 +49,10 @@ class RefreshController extends Controller
 
                 if (!empty($wordpress_plugins[$name]['new_version'])) {
                     $plugin->setAvailableVersion($wordpress_plugins[$name]['new_version']);
+                }
+
+                if (!empty($wordpress_plugins[$name]['updated'])) {
+                    $plugin->setUpdated($wordpress_plugins[$name]['updated']);
                 }
 
                 unset($wordpress_plugins[$name]);
@@ -75,6 +82,12 @@ class RefreshController extends Controller
                 $plugin->setAvailableVersion($wordpress_plugin['new_version']);
             }
 
+            if (!empty($wordpress_plugin['updated'])) {
+                $plugin->setUpdated($wordpress_plugin['updated']);
+            }
+
+            $plugin->setUpdated($this->getPluginUpdatedTime($name));
+
             $em->persist($plugin);
 
             $results[] = 'Created plugin record for ' . $plugin->getName();
@@ -88,6 +101,39 @@ class RefreshController extends Controller
             'wordpress_plugins' => $wordpress_plugins,
             'plugins' => $plugins,
         ]);
+    }
+
+    private function getPluginUpdatedTime($name, $install, $branches)
+    {
+        $date = null;
+        $i = 0;
+
+        while (empty($date) && !empty($branches[$i])) {
+            $date = $this->runPluginUpdatedTime($name, $install, $branches[$i]);
+            $i++;
+        }
+
+        if (!empty($date)) {
+            return new \DateTime($date);
+        }
+
+        return null;
+    }
+
+    private function runPluginUpdatedTime($name, $install, $branch) {
+        $builder = new ProcessBuilder();
+        $process = $builder->setPrefix('git')
+            ->add('--git-dir=' . $install)
+            ->add('log')
+            ->add('-1')
+            ->add('--format=%cd')
+            ->add($branch)
+            ->add('--')
+            ->add('wp-content/plugins/' . $name)
+            ->getProcess();
+        $process->run();
+
+        return $process->getOutput();
     }
 
     private function getPluginsFromWordPress()
@@ -119,6 +165,8 @@ class RefreshController extends Controller
                     $record['slug'] = $slugs[0];
                 }
                 $record['version'] = $version;
+
+                $record['updated'] = $this->getPluginUpdatedTime($record['slug'], $wordpress['install_path'], $wordpress['branches']);
 
                 if (empty($plugins[$record['slug']])) {
                     $plugins[$record['slug']] = array();

@@ -30,9 +30,13 @@ class PluginsController extends Controller
      */
     public function showPlugin($pluginName)
     {
+        $plugin = $this->getDoctrine()
+            ->getRepository('AppBundle:Plugin')
+            ->findOneByName($pluginName);
+
         return $this->render('plugin.html.twig', [
             'title' => "WordPress Plugins: " . $pluginName,
-            'name' => $pluginName,
+            'plugin' => $plugin,
         ]);
     }
 }
