@@ -23,32 +23,37 @@ class Plugin
     protected $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $installed;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $author;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $installed_version;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $available_version;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", nullable=TRUE)
      */
     protected $updated;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $permissions;
 
     /**
-     * @ORM\Column(type="integer")
+     * @ORM\Column(type="integer", nullable=TRUE)
      */
     protected $number_sites;
 
@@ -325,4 +330,28 @@ class Plugin
         $this->notes = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+
+    /**
+     * Set installed
+     *
+     * @param boolean $installed
+     *
+     * @return Plugin
+     */
+    public function setInstalled($installed)
+    {
+        $this->installed = $installed;
+
+        return $this;
+    }
+
+    /**
+     * Get installed
+     *
+     * @return boolean
+     */
+    public function getInstalled()
+    {
+        return $this->installed;
+    }
 }

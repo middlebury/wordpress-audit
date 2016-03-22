@@ -25,10 +25,10 @@
     <tbody>
       {% for plugin in plugins %}
         <tr>
-          <td><a href="{{ path('show_plugin', {'pluginName': plugin.slug }) }}">{{ plugin.slug }}</a></td>
+          <td><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></td>
           <td>Michael Middlebury</td>
-          <td>{{ plugin.version is defined ? plugin.version : '' }}</td>
-          <td>{{ plugin.new_version is defined ? plugin.new_version : '' }}</td>
+          <td>{{ plugin.installedVersion is not null ? plugin.installedVersion : '' }}</td>
+          <td>{{ plugin.availableVersion is not null ? plugin.availableVersion : '' }}</td>
           <td>{{ 'now'|date('Y-m-d') }}</td>
           <td>All Users</td>
           <td>{{ random(3999) }}</td>

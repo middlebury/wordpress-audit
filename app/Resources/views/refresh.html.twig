@@ -1,0 +1,13 @@
+{% extends 'midd.html.twig' %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; Refresh Results
+{% endblock %}
+
+{% block content %}
+  {{ dump(wordpress_plugins) }}
+  {{ dump(plugins) }}
+  {% for result in results %}
+    <p>{{ result }}</p>
+  {% endfor %}
+{% endblock %}
