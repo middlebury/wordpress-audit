@@ -70,12 +70,6 @@ class Theme
      */
     protected $notes;
 
-    public function __construct()
-    {
-        $this->sites = new ArrayCollection();
-        $this->notes = new ArrayCollection();
-    }
-
     /**
      * Get id
      *
@@ -321,4 +315,14 @@ class Theme
     {
         return $this->notes;
     }
+
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->sites = new \Doctrine\Common\Collections\ArrayCollection();
+        $this->notes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
 }
