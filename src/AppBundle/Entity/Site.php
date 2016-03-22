@@ -18,19 +18,19 @@ class Site
     protected $id;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="integer")
      */
-    protected $title;
+    protected $blog_id;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    protected $site;
+    protected $domain;
 
     /**
      * @ORM\Column(type="string", length=255)
      */
-    protected $uri;
+    protected $path;
 
     /**
      * Get id
@@ -43,74 +43,74 @@ class Site
     }
 
     /**
-     * Set title
+     * Set blogId
      *
-     * @param string $title
+     * @param integer $blogId
      *
      * @return Site
      */
-    public function setTitle($title)
+    public function setBlogId($blogId)
     {
-        $this->title = $title;
+        $this->blog_id = $blogId;
 
         return $this;
     }
 
     /**
-     * Get title
+     * Get blogId
      *
-     * @return string
+     * @return integer
      */
-    public function getTitle()
+    public function getBlogId()
     {
-        return $this->title;
+        return $this->blog_id;
     }
 
     /**
-     * Set site
+     * Set domain
      *
-     * @param string $site
+     * @param string $domain
      *
      * @return Site
      */
-    public function setSite($site)
+    public function setDomain($domain)
     {
-        $this->site = $site;
+        $this->domain = $domain;
 
         return $this;
     }
 
     /**
-     * Get site
+     * Get domain
      *
      * @return string
      */
-    public function getSite()
+    public function getDomain()
     {
-        return $this->site;
+        return $this->domain;
     }
 
     /**
-     * Set uri
+     * Set path
      *
-     * @param string $uri
+     * @param string $path
      *
      * @return Site
      */
-    public function setUri($uri)
+    public function setPath($path)
     {
-        $this->uri = $uri;
+        $this->path = $path;
 
         return $this;
     }
 
     /**
-     * Get uri
+     * Get path
      *
      * @return string
      */
-    public function getUri()
+    public function getPath()
     {
-        return $this->uri;
+        return $this->path;
     }
 }

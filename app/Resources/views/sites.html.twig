@@ -1,0 +1,47 @@
+{% extends 'midd.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/css/jquery.dataTables.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; {{ title }}
+{% endblock %}
+
+{% block content %}
+  <table id="wordpress-audit-sites">
+    <thead>
+      <tr>
+        <th>Blog ID</th>
+        <th>Domain</th>
+        <th>Path</th>
+        <th>Theme</th>
+        <th>Number of Plugins</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for site in sites %}
+        <tr>
+          <td><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.blogId }}</a></td>
+          <td>{{ site.domain }}</td>
+          <td>{{ site.path }}</td>
+          <td>Shadowbox</td>
+          <td>{{ random(3999) }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/js/jquery.dataTables.js') }}"></script>
+  <script>
+    $(document).ready(function() {
+      $('#wordpress-audit-sites').DataTable({
+        paginate: false,
+      });
+    });
+  </script>
+{% endblock %}

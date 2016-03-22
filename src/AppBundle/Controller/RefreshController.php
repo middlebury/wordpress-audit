@@ -4,6 +4,7 @@ namespace AppBundle\Controller;
 
 use AppBundle\Network;
 use AppBundle\Entity\Plugin;
+use AppBundle\Entity\Site;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -11,6 +12,60 @@ use Symfony\Component\HttpFoundation\Response;
 
 class RefreshController extends Controller
 {
+    /**
+     * @Route("/refresh/sites", name="refresh_sites")
+     * @Method("GET")
+     */
+    public function refreshSites()
+    {
+        $results = array();
+
+        // The sites in our WordPress installation(s).
+        $network = new Network($this->getParameter('wordpresses'));
+        $wordpress_sites = $network->getSites();
+
+        // The sites in our local application database.
+        $sites = $this->getDoctrine()
+            ->getRepository('AppBundle:Site')
+            ->findAll();
+
+        $em = $this->getDoctrine()->getManager();
+
+        foreach ($sites as $site) {
+            $uri = $site->getDomain() . $site->getPath();
+            if (in_array($uri, array_keys($wordpress_sites))) {
+                $site->setBlogId($wordpress_sites[$uri]['blog_id']);
+                $site->setDomain($wordpress_sites[$uri]['domain']);
+                $site->setPath($wordpress_sites[$uri]['path']);
+
+                unset($wordpress_sites[$uri]);
+
+                $results[] = 'Updated site record for ' . $uri;
+            } else {
+                // Do something about sites no longer existing.
+                // Only if we decide to keep notes on sites.
+            }
+        }
+
+        foreach ($wordpress_sites as $uri => $wordpress_site) {
+            $site = new Site();
+            $site->setBlogId($wordpress_site['blog_id']);
+            $site->setDomain($wordpress_site['domain']);
+            $site->setPath($wordpress_site['path']);
+
+            $em->persist($site);
+
+            $results[] = 'Created site record for ' . $uri;
+        }
+
+        $em->flush();
+
+        return $this->render('refresh.html.twig', [
+            'title' => "WordPress Sites Refreshed",
+            'results' => $results,
+        ]);
+    }
+
     /**
      * @Route("/refresh/plugins", name="refresh_plugins")
      * @Method("GET")
@@ -27,8 +82,6 @@ class RefreshController extends Controller
         $plugins = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')
             ->findAll();
-
-        $update_command = 'git --git-dir=/home/imcbride/private_html/middwp/.git log -1 --format=%cd origin/plugins -- wp-content/plugins/';
 
         $em = $this->getDoctrine()->getManager();
 
@@ -96,8 +149,6 @@ class RefreshController extends Controller
         return $this->render('refresh.html.twig', [
             'title' => "WordPress Plugins Refreshed",
             'results' => $results,
-            'wordpress_plugins' => $wordpress_plugins,
-            'plugins' => $plugins,
         ]);
     }
 }

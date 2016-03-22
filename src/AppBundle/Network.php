@@ -27,4 +27,15 @@ class Network
 
         return $plugins;
     }
+
+    public function getSites()
+    {
+        $sites = array();
+
+        foreach ($this->sites as $site) {
+            $sites = array_merge($sites, $site->getSites());
+        }
+
+        return $sites;
+    }
 }

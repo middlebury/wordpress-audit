@@ -30,11 +30,16 @@ class WordPress
         }
     }
 
+    private function getConnection()
+    {
+        return new PDO("mysql:host=$this->database_host;dbname=$this->database_name", $this->database_user, $this->database_password);
+    }
+
     public function getPlugins()
     {
         $plugins = array();
 
-        $connection = new PDO("mysql:host=$this->database_host;dbname=$this->database_name", $this->database_user, $this->database_password);
+        $connection = $this->getConnection();
 
         $statement = $connection->prepare("SELECT meta_value FROM wp_sitemeta WHERE meta_key='_site_transient_update_plugins'");
         $statement->execute();
@@ -93,7 +98,7 @@ class WordPress
         return null;
     }
 
-    private function runPluginUpdatedTime($name, $install, $path, $branch) {
+    private function runPluginUpdatedTime($name, $branch) {
         $builder = new ProcessBuilder();
         $process = $builder->setPrefix('git')
             ->add('--git-dir=' . $this->install_path . '.git')
@@ -107,5 +112,22 @@ class WordPress
         $process->run();
 
         return $process->getOutput();
+    }
+
+    public function getSites()
+    {
+        $sites = array();
+
+        $connection = $this->getConnection();
+
+        $statement = $connection->prepare("SELECT blog_id, domain, path FROM wp_blogs");
+        $statement->execute();
+        $rows = $statement->fetchAll();
+
+        foreach ($rows as $row) {
+            $sites[$row['domain'] . $row['path']] = $row;
+        }
+
+        return $sites;
     }
 }
