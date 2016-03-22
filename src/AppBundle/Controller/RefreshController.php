@@ -33,29 +33,25 @@ class RefreshController extends Controller
         $em = $this->getDoctrine()->getManager();
 
         foreach ($plugins as $plugin) {
-            $name = $plugin->getName();
-            if (in_array($name, array_keys($wordpress_plugins))) {
+            $file = $plugin->getFile();
+            if (in_array($file, array_keys($wordpress_plugins))) {
                 $plugin->setInstalled(1);
+                $plugin->setFile($file);
+                $plugin->setName($wordpress_plugins['slug']);
 
-                if (!empty($wordpress_plugins[$name]['slug'])) {
-                    $plugin->setName($wordpress_plugins[$name]['slug']);
-                } else {
-                    $plugin->setName($name);
+                if (!empty($wordpress_plugins[$file]['version'])) {
+                    $plugin->setInstalledVersion($wordpress_plugins[$file]['version']);
                 }
 
-                if (!empty($wordpress_plugins[$name]['version'])) {
-                    $plugin->setInstalledVersion($wordpress_plugins[$name]['version']);
+                if (!empty($wordpress_plugins[$file]['new_version'])) {
+                    $plugin->setAvailableVersion($wordpress_plugins[$file]['new_version']);
                 }
 
-                if (!empty($wordpress_plugins[$name]['new_version'])) {
-                    $plugin->setAvailableVersion($wordpress_plugins[$name]['new_version']);
+                if (!empty($wordpress_plugins[$file]['updated'])) {
+                    $plugin->setUpdated($wordpress_plugins[$file]['updated']);
                 }
 
-                if (!empty($wordpress_plugins[$name]['updated'])) {
-                    $plugin->setUpdated($wordpress_plugins[$name]['updated']);
-                }
-
-                unset($wordpress_plugins[$name]);
+                unset($wordpress_plugins[$file]);
 
                 $results[] = 'Updated plugin record for ' . $plugin->getName();
             } else {
@@ -64,15 +60,11 @@ class RefreshController extends Controller
             }
         }
 
-        foreach ($wordpress_plugins as $name => $wordpress_plugin) {
+        foreach ($wordpress_plugins as $file => $wordpress_plugin) {
             $plugin = new Plugin();
             $plugin->setInstalled(1);
-
-            if (!empty($wordpress_plugin['slug'])) {
-                $plugin->setName($wordpress_plugin['slug']);
-            } else {
-                $plugin->setName($name);
-            }
+            $plugin->setFile($file);
+            $plugin->setName($wordpress_plugin['slug']);
 
             if (!empty($wordpress_plugin['version'])) {
                 $plugin->setInstalledVersion($wordpress_plugin['version']);
@@ -85,8 +77,6 @@ class RefreshController extends Controller
             if (!empty($wordpress_plugin['updated'])) {
                 $plugin->setUpdated($wordpress_plugin['updated']);
             }
-
-            $plugin->setUpdated($this->getPluginUpdatedTime($name));
 
             $em->persist($plugin);
 
@@ -168,10 +158,10 @@ class RefreshController extends Controller
 
                 $record['updated'] = $this->getPluginUpdatedTime($record['slug'], $wordpress['install_path'], $wordpress['branches']);
 
-                if (empty($plugins[$record['slug']])) {
-                    $plugins[$record['slug']] = array();
+                if (empty($plugins[$plugin])) {
+                    $plugins[$plugin] = array();
                 }
-                $plugins[$record['slug']] = array_merge($plugins[$record['slug']], $record);
+                $plugins[$plugin] = array_merge($plugins[$plugin], $record);
             }
         }
 

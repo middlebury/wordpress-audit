@@ -23,6 +23,11 @@ class Plugin
     protected $name;
 
     /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $file;
+
+    /**
      * @ORM\Column(type="boolean", options={"default":0})
      */
     protected $installed;
@@ -353,5 +358,29 @@ class Plugin
     public function getInstalled()
     {
         return $this->installed;
+    }
+
+    /**
+     * Set file
+     *
+     * @param string $file
+     *
+     * @return Plugin
+     */
+    public function setFile($file)
+    {
+        $this->file = $file;
+
+        return $this;
+    }
+
+    /**
+     * Get file
+     *
+     * @return string
+     */
+    public function getFile()
+    {
+        return $this->file;
     }
 }
