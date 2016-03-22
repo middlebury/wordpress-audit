@@ -20,21 +20,23 @@ parameters:
     wordpresses:
       sub.first-domain.com:
         database_host:      127.0.0.1
-        database_post:      ~
+        database_port:      ~
         database_name:      wordpress
         database_user:      root
         database_password:  ~
-        install_path:       /var/www/html/wordpress/.git
+        install_path:       /var/www/html/wordpress/
+        plugins_path:       wp-content/plugins/
         branches:
           - 'origin/plugins'
           - 'origin/master'
       sub.second-domain.com:
         database_host:      127.0.0.1
-        database_post:      ~
+        database_port:      ~
         database_name:      wordpress
         database_user:      root
         database_password:  ~
-        install_path:       /var/www/html/wordpress/.git
+        install_path:       /var/www/html/wordpress/
+        plugins_path:       wp-content/plugins/
         branches:
           - 'origin/plugins'
           - 'origin/master'

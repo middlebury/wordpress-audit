@@ -2,13 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\Network;
 use AppBundle\Entity\Plugin;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Process\ProcessBuilder;
-use \PDO;
 
 class RefreshController extends Controller
 {
@@ -21,7 +20,8 @@ class RefreshController extends Controller
         $results = array();
 
         // The plugins in our WordPress installation(s).
-        $wordpress_plugins = $this->getPluginsFromWordPress();
+        $network = new Network($this->getParameter('wordpresses'));
+        $wordpress_plugins = $network->getPlugins();
 
         // The plugins in our local application database.
         $plugins = $this->getDoctrine()
@@ -37,7 +37,11 @@ class RefreshController extends Controller
             if (in_array($file, array_keys($wordpress_plugins))) {
                 $plugin->setInstalled(1);
                 $plugin->setFile($file);
-                $plugin->setName($wordpress_plugins['slug']);
+                $plugin->setName($wordpress_plugins[$file]['slug']);
+
+                if (!empty($wordpress_plugins[$file]['author'])) {
+                    $plugin->setAuthor($wordpress_plugins[$file]['author']);
+                }
 
                 if (!empty($wordpress_plugins[$file]['version'])) {
                     $plugin->setInstalledVersion($wordpress_plugins[$file]['version']);
@@ -66,6 +70,10 @@ class RefreshController extends Controller
             $plugin->setFile($file);
             $plugin->setName($wordpress_plugin['slug']);
 
+            if (!empty($wordpress_plugin['author'])) {
+                $plugin->setAuthor($wordpress_plugin['author']);
+            }
+
             if (!empty($wordpress_plugin['version'])) {
                 $plugin->setInstalledVersion($wordpress_plugin['version']);
             }
@@ -91,80 +99,5 @@ class RefreshController extends Controller
             'wordpress_plugins' => $wordpress_plugins,
             'plugins' => $plugins,
         ]);
-    }
-
-    private function getPluginUpdatedTime($name, $install, $branches)
-    {
-        $date = null;
-        $i = 0;
-
-        while (empty($date) && !empty($branches[$i])) {
-            $date = $this->runPluginUpdatedTime($name, $install, $branches[$i]);
-            $i++;
-        }
-
-        if (!empty($date)) {
-            return new \DateTime($date);
-        }
-
-        return null;
-    }
-
-    private function runPluginUpdatedTime($name, $install, $branch) {
-        $builder = new ProcessBuilder();
-        $process = $builder->setPrefix('git')
-            ->add('--git-dir=' . $install)
-            ->add('log')
-            ->add('-1')
-            ->add('--format=%cd')
-            ->add($branch)
-            ->add('--')
-            ->add('wp-content/plugins/' . $name)
-            ->getProcess();
-        $process->run();
-
-        return $process->getOutput();
-    }
-
-    private function getPluginsFromWordPress()
-    {
-        $plugins = array();
-
-        $wordpresses = $this->getParameter('wordpresses');
-
-        foreach ($wordpresses as $wordpress) {
-            $host = $wordpress['database_host'];
-            $name = $wordpress['database_name'];
-            $user = $wordpress['database_user'];
-            $pass = $wordpress['database_password'];
-            $connection = new PDO("mysql:host=$host;dbname=$name", $user, $pass);
-
-            $statement = $connection->prepare("SELECT meta_value FROM wp_sitemeta WHERE meta_key='_site_transient_update_plugins'");
-            $statement->execute();
-            $row = $statement->fetch();
-            $data = unserialize($row['meta_value']);
-
-            foreach ($data->checked as $plugin => $version) {
-                $record = array();
-                if (!empty($data->response[$plugin])) {
-                    $record = get_object_vars($data->response[$plugin]);
-                } else if (!empty($data->no_update[$plugin])) {
-                    $record = get_object_vars($data->no_update[$plugin]);
-                } else {
-                    $slugs = preg_split('/\//', $plugin);
-                    $record['slug'] = $slugs[0];
-                }
-                $record['version'] = $version;
-
-                $record['updated'] = $this->getPluginUpdatedTime($record['slug'], $wordpress['install_path'], $wordpress['branches']);
-
-                if (empty($plugins[$plugin])) {
-                    $plugins[$plugin] = array();
-                }
-                $plugins[$plugin] = array_merge($plugins[$plugin], $record);
-            }
-        }
-
-        return $plugins;
     }
 }

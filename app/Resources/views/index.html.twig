@@ -2,9 +2,31 @@
 
 {% block content %}
   <nav>
-    <ul>
-      <li><a href="{{ path('list_plugins') }}">Plugins</a></li>
-      <li><a href="{{ path('list_themes') }}">Themes</a></li>
-    </ul>
+    <table>
+      <thead>
+        <tr>
+          <th scope="col">Type</th>
+          <th scope="col">List</th>
+          <th scope="col">Refresh</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <th scope="row">Plugins</th>
+          <td><a href="{{ path('list_plugins') }}">List Plugins</a></td>
+          <td><a href="{{ path('refresh_plugins')}}">Refresh Plugins</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Themes</th>
+          <td><a href="{{ path('list_themes') }}">List Themes</a></td>
+          <td><a href="#">Refresh Themes</a></td>
+        </tr>
+        <tr>
+          <th scope="row">Sites</th>
+          <td><a href="#">List Sites</a></td>
+          <td><a href="#">Refresh Sites</a></td>
+        </tr>
+      </tbody>
+    </table>
   </nav>
 {% endblock %}

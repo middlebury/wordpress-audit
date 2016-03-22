@@ -18,7 +18,6 @@
         <th>Installed Version</th>
         <th>Available Version</th>
         <th>Updated</th>
-        <th>Permissions</th>
         <th>Number of Sites</th>
       </tr>
     </thead>
@@ -26,11 +25,10 @@
       {% for plugin in plugins %}
         <tr>
           <td><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></td>
-          <td>Michael Middlebury</td>
-          <td>{{ plugin.installedVersion is not null ? plugin.installedVersion : '' }}</td>
-          <td>{{ plugin.availableVersion is not null ? plugin.availableVersion : '' }}</td>
+          <td>{{ plugin.author }}</td>
+          <td>{{ plugin.installedVersion }}</td>
+          <td>{{ plugin.availableVersion }}</td>
           <td>{{ plugin.updated|date('Y-m-d') }}</td>
-          <td>All Users</td>
           <td>{{ random(3999) }}</td>
         </tr>
       {% endfor %}
