@@ -33,6 +33,21 @@ class Site
     protected $path;
 
     /**
+     * @ORM\OneToOne(targetEntity="Theme")
+     * @ORM\JoinColumn(name="theme_id", referencedColumnName="id")
+     */
+    protected $theme;
+
+    /**
+     * @ORM\ManyToMany(targetEntity="Note")
+     * @ORM\JoinTable(name="sites_notes",
+     *      joinColumns={@ORM\JoinColumn(name="site_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="note_id", referencedColumnName="id", unique=true)}
+     *      )
+     */
+    protected $notes;
+
+    /**
      * Get id
      *
      * @return integer
@@ -112,5 +127,70 @@ class Site
     public function getPath()
     {
         return $this->path;
+    }
+    /**
+     * Constructor
+     */
+    public function __construct()
+    {
+        $this->notes = new \Doctrine\Common\Collections\ArrayCollection();
+    }
+
+    /**
+     * Set theme
+     *
+     * @param \AppBundle\Entity\Theme $theme
+     *
+     * @return Site
+     */
+    public function setTheme(\AppBundle\Entity\Theme $theme = null)
+    {
+        $this->theme = $theme;
+
+        return $this;
+    }
+
+    /**
+     * Get theme
+     *
+     * @return \AppBundle\Entity\Theme
+     */
+    public function getTheme()
+    {
+        return $this->theme;
+    }
+
+    /**
+     * Add note
+     *
+     * @param \AppBundle\Entity\Note $note
+     *
+     * @return Site
+     */
+    public function addNote(\AppBundle\Entity\Note $note)
+    {
+        $this->notes[] = $note;
+
+        return $this;
+    }
+
+    /**
+     * Remove note
+     *
+     * @param \AppBundle\Entity\Note $note
+     */
+    public function removeNote(\AppBundle\Entity\Note $note)
+    {
+        $this->notes->removeElement($note);
+    }
+
+    /**
+     * Get notes
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getNotes()
+    {
+        return $this->notes;
     }
 }
