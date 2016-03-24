@@ -37,6 +37,22 @@ class RefreshController extends Controller
                 $site->setBlogId($wordpress_sites[$uri]['blog_id']);
                 $site->setDomain($wordpress_sites[$uri]['domain']);
                 $site->setPath($wordpress_sites[$uri]['path']);
+                
+                $plugins = $site->getPlugins();
+                foreach ($plugins as $plugin) {
+                    if (!in_array($plugin->file, $wordpress_sites[$uri]['plugins'])) {
+                        $site->removePlugin($plugin);
+                    } else {
+                        $wordpress_sites[$uri]['plugins'] = array_diff($wordpress_sites[$uri]['plugins'], array($plugin->file));
+                    }
+                }
+                
+                foreach ($wordpress_sites[$uri]['plugins'] as $file) {
+                    $plugin = $this->getDoctrine()
+                        ->getRepository('AppBundle:Plugin')
+                        ->findOneBy(array('file' => $file));
+                    $site->addPlugin($plugin);
+                }
 
                 unset($wordpress_sites[$uri]);
 
@@ -52,6 +68,13 @@ class RefreshController extends Controller
             $site->setBlogId($wordpress_site['blog_id']);
             $site->setDomain($wordpress_site['domain']);
             $site->setPath($wordpress_site['path']);
+
+            foreach ($wordpress_site['plugins'] as $file) {
+                $plugin = $this->getDoctrine()
+                    ->getRepository('AppBundle:Plugin')
+                    ->findOneBy(array('file' => $file));
+                $site->addPlugin($plugin);
+            }
 
             $em->persist($site);
 
