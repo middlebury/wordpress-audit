@@ -142,7 +142,7 @@ class WordPress
     {
         $plugins = array();
         
-        if (!is_int($site_id)) {
+        if (!is_numeric($site_id)) {
             return $plugins;
         }
         
@@ -152,9 +152,13 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['option_value']);
-        
+
         $connection = null;
         
-        return array_merge($plugins, $data);
+        if (!empty($data)) {
+            $plugins = array_merge($plugins, $data);
+        }
+        
+        return $plugins;
     }
 }
