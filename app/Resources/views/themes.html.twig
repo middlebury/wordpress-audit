@@ -31,7 +31,7 @@
           <td>{{ theme.availableVersion }}</td>
           <td>{{ theme.updated|date('Y-m-d') }}</td>
           <td>All Users</td>
-          <td>{{ random(3999) }}</td>
+          <td>{{ theme.sites|length }}</td>
         </tr>
       {% endfor %}
     </tbody>

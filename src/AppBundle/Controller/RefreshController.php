@@ -41,10 +41,11 @@ class RefreshController extends Controller
                 
                 $plugins = $site->getPlugins();
                 foreach ($plugins as $plugin) {
-                    if (!in_array($plugin->file, $wordpress_sites[$uri]['plugins'])) {
+                    $file = $plugin->getFile();
+                    if (!in_array($file, $wordpress_sites[$uri]['plugins'])) {
                         $site->removePlugin($plugin);
                     } else {
-                        $wordpress_sites[$uri]['plugins'] = array_diff($wordpress_sites[$uri]['plugins'], array($plugin->file));
+                        $wordpress_sites[$uri]['plugins'] = array_diff($wordpress_sites[$uri]['plugins'], array($file));
                     }
                 }
                 
@@ -53,6 +54,16 @@ class RefreshController extends Controller
                         ->getRepository('AppBundle:Plugin')
                         ->findOneBy(array('file' => $file));
                     $site->addPlugin($plugin);
+                }
+                
+                $theme = $this->getDoctrine()
+                    ->getRepository('AppBundle:Theme')
+                    ->findOneByName($wordpress_sites[$uri]['theme']);
+                if (!empty($theme)) {
+                    $site->setTheme($theme);
+                    $theme->addSite($site);
+
+                    $em->persist($theme);
                 }
 
                 unset($wordpress_sites[$uri]);
@@ -75,6 +86,16 @@ class RefreshController extends Controller
                     ->getRepository('AppBundle:Plugin')
                     ->findOneBy(array('file' => $file));
                 $site->addPlugin($plugin);
+            }
+            
+            $theme = $this->getDoctrine()
+                ->getRepository('AppBundle:Theme')
+                ->findOneByName($wordpress_site['theme']);
+            if (!empty($theme)) {
+                $site->setTheme($theme);
+                $theme->addSite($site);
+
+                $em->persist($theme);
             }
 
             $em->persist($site);
@@ -137,6 +158,11 @@ class RefreshController extends Controller
             } else {
                 $theme->setInstalled(0);
                 $results[] = 'Set theme ' . $theme->getName() . ' to uninstalled.';
+            }
+            
+            // Clear all the sites from this theme. The site refresh process will add them back in.
+            foreach ($theme->getSites() as $site) {
+                $theme->removeSite($site);
             }
         }
         

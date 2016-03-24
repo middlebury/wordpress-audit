@@ -47,8 +47,6 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['meta_value']);
-
-        $connection = null;
         
         foreach ($data->checked as $theme => $version) {
             $record = array();
@@ -81,8 +79,6 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['meta_value']);
-        
-        $connection = null;
 
         foreach ($data->checked as $plugin => $version) {
             $record = array();
@@ -172,11 +168,10 @@ class WordPress
         $statement = $connection->prepare("SELECT blog_id, domain, path FROM wp_blogs");
         $statement->execute();
         $rows = $statement->fetchAll();
-        
-        $connection = null;
 
         foreach ($rows as $row) {
             $row['plugins'] = $this->getSitePlugins($row['blog_id']);
+            $row['theme'] = $this->getSiteTheme($row['blog_id']);
 
             $sites[$row['domain'] . $row['path']] = $row;
         }
@@ -184,7 +179,7 @@ class WordPress
         return $sites;
     }
     
-    public function getSitePlugins($site_id)
+    private function getSitePlugins($site_id)
     {
         $plugins = array();
         
@@ -198,13 +193,32 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['option_value']);
-
-        $connection = null;
         
         if (!empty($data)) {
             $plugins = array_merge($plugins, $data);
         }
         
         return $plugins;
+    }
+    
+    private function getSiteTheme($site_id)
+    {
+        $theme = '';
+        
+        if (!is_numeric($site_id)) {
+            return $theme;
+        }
+        
+        $connection = $this->getConnection();
+        
+        $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='template'");
+        $statement->execute();
+        $row = $statement->fetch();
+        
+        if (!empty($row['option_value'])) {
+            $theme = $row['option_value'];
+        }
+        
+        return $theme;
     }
 }

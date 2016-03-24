@@ -17,7 +17,11 @@
     <dd>{{ site.path }}</dd>
 
     <dt>Theme</dt>
-    <dd>Shadowbox</dd>
+    <dd>
+      {% if site.theme.name is defined %}
+        <a href="{{ path('show_theme', {'themeName': site.theme.name }) }}">{{ site.theme.name }}</a>
+      {% endif %}
+    </dd>
 
     <dt>Number of Plugins</dt>
     <dd>{{ site.plugins|length }}</dd>
