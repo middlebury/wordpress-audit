@@ -63,7 +63,7 @@ class Plugin
     protected $number_sites;
 
     /**
-     * @ORM\ManyToMany(targetEntity="Site")
+     * @ORM\ManyToMany(targetEntity="Site", mappedBy="plugins")
      * @ORM\JoinTable(name="plugins_sites",
      *      joinColumns={@ORM\JoinColumn(name="plugin_id", referencedColumnName="id")},
      *      inverseJoinColumns={@ORM\JoinColumn(name="site_id", referencedColumnName="id")}
