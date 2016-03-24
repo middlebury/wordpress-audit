@@ -39,6 +39,15 @@ class Site
     protected $theme;
 
     /**
+     * @ORM\ManyToMany(targetEntity="Plugin", inversedBy="sites")
+     * @ORM\JoinTable(name="plugins_sites",
+     *      joinColumns={@ORM\JoinColumn(name="site_id", referencedColumnName="id")},
+     *      inverseJoinColumns={@ORM\JoinColumn(name="plugin_id", referencedColumnName="id")}
+     *      )
+     */
+    protected $plugins;
+
+    /**
      * @ORM\ManyToMany(targetEntity="Note")
      * @ORM\JoinTable(name="sites_notes",
      *      joinColumns={@ORM\JoinColumn(name="site_id", referencedColumnName="id")},
@@ -192,5 +201,39 @@ class Site
     public function getNotes()
     {
         return $this->notes;
+    }
+
+    /**
+     * Add plugin
+     *
+     * @param \AppBundle\Entity\Plugin $plugin
+     *
+     * @return Site
+     */
+    public function addPlugin(\AppBundle\Entity\Plugin $plugin)
+    {
+        $this->plugins[] = $plugin;
+
+        return $this;
+    }
+
+    /**
+     * Remove plugin
+     *
+     * @param \AppBundle\Entity\Plugin $plugin
+     */
+    public function removePlugin(\AppBundle\Entity\Plugin $plugin)
+    {
+        $this->plugins->removeElement($plugin);
+    }
+
+    /**
+     * Get plugins
+     *
+     * @return \Doctrine\Common\Collections\Collection
+     */
+    public function getPlugins()
+    {
+        return $this->plugins;
     }
 }

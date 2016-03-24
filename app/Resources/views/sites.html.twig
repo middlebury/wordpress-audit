@@ -26,8 +26,12 @@
           <td><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.blogId }}</a></td>
           <td>{{ site.domain }}</td>
           <td>{{ site.path }}</td>
-          <td>Shadowbox</td>
-          <td>{{ random(3999) }}</td>
+          <td>
+            {% if site.theme.name is defined %}
+              <a href="{{ path('show_theme', {'themeName': site.theme.name }) }}">{{ site.theme.name }}</a>
+            {% endif %}
+          </td>
+          <td>{{ site.plugins|length }}</td>
         </tr>
       {% endfor %}
     </tbody>

@@ -8,29 +8,28 @@
   <p><a href="#sites">Sites</a> | <a href="#notes">Notes</a> | <a href="#add-note">Add Note</a></p>
   <dl>
     <dt>Author</dt>
-    <dd>Michael Middlebury</dd>
+    <dd>{{ theme.author }}</dd>
 
     <dt>Installed Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ theme.installedVersion }}</dd>
 
     <dt>Available Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ theme.availableVersion }}</dd>
 
     <dt>Updated</dt>
-    <dd>{{ 'now'|date('Y-m-d') }}</dd>
+    <dd>{{ theme.updated|date('Y-m-d') }}</dd>
 
     <dt>Permissions</dt>
     <dd>All Users</dd>
 
     <dt>Number of Sites</dt>
-    <dd>{{ random(3999) }}</dd>
+    <dd>{{ theme.sites|length }}</dd>
   </dl>
   <h2><a name="sites">Sites</a></h2>
   <ul>
-    <li><a href="http://sites.middlebury.edu/blog1">Blog 1</a></li>
-    <li><a href="http://sites.middlebury.edu/blog2">Blog 2</a></li>
-    <li><a href="http://sites.middlebury.edu/blog3">Blog 3</a></li>
-    <li><a href="http://sites.middlebury.edu/blog4">Blog 4</a></li>
+    {% for site in theme.sites %}
+      <li><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.domain ~ site.path }}</a></li>
+    {% endfor %}
   </ul>
   <h2><a name="notes">Notes</a></h2>
   <ul>
@@ -44,7 +43,7 @@
   <form>
     <p>
       <label for="wordpress-audit-note-name">Plugin</label>
-      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ name }}" />
+      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ theme.name }}" />
     </p>
 
     <p>

@@ -18,6 +18,8 @@ class WordPress
     protected $install_path;
 
     protected $plugins_path;
+    
+    protected $themes_path;
 
     protected $branches;
 
@@ -33,6 +35,38 @@ class WordPress
     private function getConnection()
     {
         return new PDO("mysql:host=$this->database_host;dbname=$this->database_name", $this->database_user, $this->database_password);
+    }
+    
+    public function getThemes()
+    {
+        $themes = array();
+        
+        $connection = $this->getConnection();
+        
+        $statement = $connection->prepare("SELECT meta_value FROM wp_sitemeta WHERE meta_key='_site_transient_update_themes'");
+        $statement->execute();
+        $row = $statement->fetch();
+        $data = unserialize($row['meta_value']);
+        
+        foreach ($data->checked as $theme => $version) {
+            $record = array();
+            $record['theme'] = $theme;
+            $record['version'] = $version;
+
+            if (!empty($data->response[$theme])) {
+                $record['new_version'] = $data->response[$theme]['new_version'];                
+            }
+
+            // Get the last updated time from git.
+            $record['updated'] = $this->getUpdatedTime($theme, $this->themes_path);
+
+            // Get the plugin author from the file.
+            $record['author'] = $this->getAuthor($this->themes_path, $theme . '/style.css');
+            
+            $themes[$theme] = $record;
+        }
+        
+        return $themes;
     }
 
     public function getPlugins()
@@ -59,35 +93,24 @@ class WordPress
             $record['version'] = $version;
 
             // Get the last updated time from git.
-            $record['updated'] = $this->getPluginUpdatedTime($slugs[0]);
+            $record['updated'] = $this->getUpdatedTime($slugs[0], $this->plugins_path);
 
             // Get the plugin author from the file.
-            $handle = @fopen($this->install_path . $this->plugins_path . $plugin, "r");
-            if ($handle) {
-                while (!feof($handle)) {
-                    $buffer = fgets($handle);
-                    $matches = array();
-                    preg_match('/Author:\s([^\n]*)\n/', $buffer, $matches);
-                    if (!empty($matches[1])) {
-                        $record['author'] = trim($matches[1]);
-                        break;
-                    }
-                }
-                fclose($handle);
-            }
+            $record['author'] = $this->getAuthor($this->plugins_path, $plugin);
+
             $plugins[$plugin] = $record;
         }
 
         return $plugins;
     }
 
-    private function getPluginUpdatedTime($name)
+    private function getUpdatedTime($name, $path)
     {
         $date = null;
         $i = 0;
 
-        while (empty($date) && !empty($branches[$i])) {
-            $date = $this->runPluginUpdatedTime($name, $branches[$i]);
+        while (empty($date) && !empty($this->branches[$i])) {
+            $date = $this->runUpdatedTime($name, $path, $this->branches[$i]);
             $i++;
         }
 
@@ -98,7 +121,8 @@ class WordPress
         return null;
     }
 
-    private function runPluginUpdatedTime($name, $branch) {
+    private function runUpdatedTime($name, $path, $branch)
+    {
         $builder = new ProcessBuilder();
         $process = $builder->setPrefix('git')
             ->add('--git-dir=' . $this->install_path . '.git')
@@ -107,11 +131,32 @@ class WordPress
             ->add('--format=%cd')
             ->add($branch)
             ->add('--')
-            ->add($this->plugins_path . $name)
+            ->add($path . $name)
             ->getProcess();
         $process->run();
 
         return $process->getOutput();
+    }
+    
+    private function getAuthor($path, $name)
+    {
+        $author = '';
+        
+        $handle = @fopen($this->install_path . $path . $name, "r");
+        if ($handle) {
+            while (!feof($handle)) {
+                $buffer = fgets($handle);
+                $matches = array();
+                preg_match('/Author:\s([^\n]*)\n/', $buffer, $matches);
+                if (!empty($matches[1])) {
+                    $author = trim($matches[1]);
+                    break;
+                }
+            }
+            fclose($handle);
+        }
+        
+        return $author;
     }
 
     public function getSites()
@@ -125,9 +170,55 @@ class WordPress
         $rows = $statement->fetchAll();
 
         foreach ($rows as $row) {
+            $row['plugins'] = $this->getSitePlugins($row['blog_id']);
+            $row['theme'] = $this->getSiteTheme($row['blog_id']);
+
             $sites[$row['domain'] . $row['path']] = $row;
         }
 
         return $sites;
+    }
+    
+    private function getSitePlugins($site_id)
+    {
+        $plugins = array();
+        
+        if (!is_numeric($site_id)) {
+            return $plugins;
+        }
+        
+        $connection = $this->getConnection();
+
+        $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='active_plugins'");
+        $statement->execute();
+        $row = $statement->fetch();
+        $data = unserialize($row['option_value']);
+        
+        if (!empty($data)) {
+            $plugins = array_merge($plugins, $data);
+        }
+        
+        return $plugins;
+    }
+    
+    private function getSiteTheme($site_id)
+    {
+        $theme = '';
+        
+        if (!is_numeric($site_id)) {
+            return $theme;
+        }
+        
+        $connection = $this->getConnection();
+        
+        $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='template'");
+        $statement->execute();
+        $row = $statement->fetch();
+        
+        if (!empty($row['option_value'])) {
+            $theme = $row['option_value'];
+        }
+        
+        return $theme;
     }
 }

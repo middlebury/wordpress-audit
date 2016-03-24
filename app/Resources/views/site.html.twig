@@ -17,17 +17,20 @@
     <dd>{{ site.path }}</dd>
 
     <dt>Theme</dt>
-    <dd>Shadowbox</dd>
+    <dd>
+      {% if site.theme.name is defined %}
+        <a href="{{ path('show_theme', {'themeName': site.theme.name }) }}">{{ site.theme.name }}</a>
+      {% endif %}
+    </dd>
 
     <dt>Number of Plugins</dt>
-    <dd>{{ random(3999) }}</dd>
+    <dd>{{ site.plugins|length }}</dd>
   </dl>
   <h2><a name="sites">Plugins</a></h2>
   <ul>
-    <li>Plugin 1</li>
-    <li>Plugin 2</li>
-    <li>Plugin 3</li>
-    <li>Plugin 4</li>
+    {% for plugin in site.plugins %}
+      <li><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></li>
+    {% endfor %}
   </ul>
   <h2><a name="notes">Notes</a></h2>
   <ul>
