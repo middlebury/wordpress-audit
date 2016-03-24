@@ -29,7 +29,7 @@
           <td>{{ plugin.installedVersion }}</td>
           <td>{{ plugin.availableVersion }}</td>
           <td>{{ plugin.updated|date('Y-m-d') }}</td>
-          <td>{{ random(3999) }}</td>
+          <td>{{ plugin.sites|length }}</td>
         </tr>
       {% endfor %}
     </tbody>

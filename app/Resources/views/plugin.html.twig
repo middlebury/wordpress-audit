@@ -23,14 +23,13 @@
     <dd>All Users</dd>
 
     <dt>Number of Sites</dt>
-    <dd>{{ random(3999) }}</dd>
+    <dd>{{ plugin.sites|length }}</dd>
   </dl>
   <h2><a name="sites">Sites</a></h2>
   <ul>
-    <li><a href="http://sites.middlebury.edu/blog1">Blog 1</a></li>
-    <li><a href="http://sites.middlebury.edu/blog2">Blog 2</a></li>
-    <li><a href="http://sites.middlebury.edu/blog3">Blog 3</a></li>
-    <li><a href="http://sites.middlebury.edu/blog4">Blog 4</a></li>
+    {% for site in plugin.sites %}
+      <li><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.domain ~ site.path }}</a></li>
+    {% endfor %}
   </ul>
   <h2><a name="notes">Notes</a></h2>
   <ul>

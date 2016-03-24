@@ -27,7 +27,7 @@
           <td>{{ site.domain }}</td>
           <td>{{ site.path }}</td>
           <td>Shadowbox</td>
-          <td>{{ random(3999) }}</td>
+          <td>{{ site.plugins|length }}</td>
         </tr>
       {% endfor %}
     </tbody>
