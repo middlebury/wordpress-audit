@@ -5,6 +5,7 @@ namespace AppBundle\Controller;
 use AppBundle\Network;
 use AppBundle\Entity\Plugin;
 use AppBundle\Entity\Site;
+use AppBundle\Entity\Theme;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -85,6 +86,90 @@ class RefreshController extends Controller
 
         return $this->render('refresh.html.twig', [
             'title' => "WordPress Sites Refreshed",
+            'results' => $results,
+        ]);
+    }
+    
+    /**
+     * @Route("/refresh/themes", name="refresh_themes")
+     * @Method("GET")
+     */
+    public function refreshThemes()
+    {
+        $results = array();
+        
+        // The themes in our WordPress installation(s).
+        $network = new Network($this->getParameter('wordpresses'));
+        $wordpress_themes = $network->getThemes();
+
+        // The themes in our local application database.
+        $themes = $this->getDoctrine()
+            ->getRepository('AppBundle:Theme')
+            ->findAll();
+            
+        $em = $this->getDoctrine()->getManager();
+        
+        foreach ($themes as $theme) {
+            $name = $theme->getName();
+            if (in_array($name, array_keys($wordpress_themes))) {
+                $theme->setInstalled(1);
+                $theme->setName($name);
+                
+                if (!empty($wordpress_themes[$name]['version'])) {
+                    $theme->setInstalledVersion($wordpress_themes[$name]['version']);
+                }
+                
+                if (!empty($wordpress_themes[$name]['new_version'])) {
+                    $theme->setAvailableVersion($wordpress_themes[$name]['new_version']);
+                }
+                
+                if (!empty($wordpress_themes[$name]['updated'])) {
+                    $theme->setUpdated($wordpress_themes[$name]['updated']);
+                }
+                
+                if (!empty($wordpress_themes[$name]['author'])) {
+                    $theme->setAuthor($wordpress_themes[$name]['author']);
+                }
+                
+                unset($wordpress_themes[$name]);
+                
+                $results[] = 'Updated theme record for ' . $theme->getName();
+            } else {
+                $theme->setInstalled(0);
+                $results[] = 'Set theme ' . $theme->getName() . ' to uninstalled.';
+            }
+        }
+        
+        foreach ($wordpress_themes as $name => $wordpress_theme) {
+            $theme = new Theme();
+            $theme->setInstalled(1);
+            $theme->setName($name);
+            
+            if (!empty($wordpress_theme['version'])) {
+                $theme->setInstalledVersion($wordpress_theme['version']);
+            }
+            
+            if (!empty($wordpress_theme['new_version'])) {
+                $theme->setAvailableVersion($wordpress_theme['new_version']);
+            }
+            
+            if (!empty($wordpress_theme['updated'])) {
+                $theme->setUpdated($wordpress_theme['updated']);
+            }
+            
+            if (!empty($wordpress_theme['author'])) {
+                $theme->setAuthor($wordpress_theme['author']);
+            }
+            
+            $em->persist($theme);
+            
+            $results[] = 'Created theme record for ' . $theme->getName();
+        }
+        
+        $em->flush();
+        
+        return $this->render('refresh.html.twig', [
+            'title' => "WordPress Themes Refreshed",
             'results' => $results,
         ]);
     }

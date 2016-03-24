@@ -26,6 +26,7 @@ parameters:
         database_password:  ~
         install_path:       /var/www/html/wordpress/
         plugins_path:       wp-content/plugins/
+        themes_path:        wp-content/themes/
         branches:
           - 'origin/plugins'
           - 'origin/master'
@@ -37,6 +38,7 @@ parameters:
         database_password:  ~
         install_path:       /var/www/html/wordpress/
         plugins_path:       wp-content/plugins/
+        themes_path:        wp-content/themes/
         branches:
           - 'origin/plugins'
           - 'origin/master'

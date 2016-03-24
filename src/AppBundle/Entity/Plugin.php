@@ -48,7 +48,7 @@ class Plugin
     protected $available_version;
 
     /**
-     * @ORM\Column(type="date", nullable=TRUE)
+     * @ORM\Column(type="date", nullable=true)
      */
     protected $updated;
 
@@ -56,11 +56,6 @@ class Plugin
      * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $permissions;
-
-    /**
-     * @ORM\Column(type="integer", nullable=TRUE)
-     */
-    protected $number_sites;
 
     /**
      * @ORM\ManyToMany(targetEntity="Site", mappedBy="plugins")
@@ -232,30 +227,6 @@ class Plugin
     public function getPermissions()
     {
         return $this->permissions;
-    }
-
-    /**
-     * Set numberSites
-     *
-     * @param integer $numberSites
-     *
-     * @return Plugin
-     */
-    public function setNumberSites($numberSites)
-    {
-        $this->number_sites = $numberSites;
-
-        return $this;
-    }
-
-    /**
-     * Get numberSites
-     *
-     * @return integer
-     */
-    public function getNumberSites()
-    {
-        return $this->number_sites;
     }
 
     /**

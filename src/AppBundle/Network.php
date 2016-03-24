@@ -16,6 +16,17 @@ class Network
             $this->sites[] = new WordPress($wordpress);
         }
     }
+    
+    public function getThemes()
+    {
+        $themes = array();
+        
+        foreach ($this->sites as $site) {
+            $themes = array_merge($themes, $site->getThemes());
+        }
+        
+        return $themes;
+    }
 
     public function getPlugins()
     {

@@ -25,11 +25,11 @@
     <tbody>
       {% for theme in themes %}
         <tr>
-          <td><a href="{{ path('show_theme', {'themeName': theme }) }}">{{ theme }}</a></td>
-          <td>Michael Middlebury</td>
-          <td>{{ random(9) }}</td>
-          <td>{{ random(9) }}</td>
-          <td>{{ 'now'|date('Y-m-d') }}</td>
+          <td><a href="{{ path('show_theme', {'themeName': theme.name }) }}">{{ theme.name }}</a></td>
+          <td>{{ theme.author }}</td>
+          <td>{{ theme.installedVersion }}</td>
+          <td>{{ theme.availableVersion }}</td>
+          <td>{{ theme.updated|date('Y-m-d') }}</td>
           <td>All Users</td>
           <td>{{ random(3999) }}</td>
         </tr>

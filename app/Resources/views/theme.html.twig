@@ -8,16 +8,16 @@
   <p><a href="#sites">Sites</a> | <a href="#notes">Notes</a> | <a href="#add-note">Add Note</a></p>
   <dl>
     <dt>Author</dt>
-    <dd>Michael Middlebury</dd>
+    <dd>{{ theme.author }}</dd>
 
     <dt>Installed Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ theme.installedVersion }}</dd>
 
     <dt>Available Version</dt>
-    <dd>{{ random(9) }}</dd>
+    <dd>{{ theme.availableVersion }}</dd>
 
     <dt>Updated</dt>
-    <dd>{{ 'now'|date('Y-m-d') }}</dd>
+    <dd>{{ theme.updated|date('Y-m-d') }}</dd>
 
     <dt>Permissions</dt>
     <dd>All Users</dd>
@@ -44,7 +44,7 @@
   <form>
     <p>
       <label for="wordpress-audit-note-name">Plugin</label>
-      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ name }}" />
+      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ theme.name }}" />
     </p>
 
     <p>

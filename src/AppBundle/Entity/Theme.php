@@ -23,34 +23,34 @@ class Theme
     protected $name;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $installed;
+
+    /**
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $author;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $installed_version;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $available_version;
 
     /**
-     * @ORM\Column(type="date")
+     * @ORM\Column(type="date", nullable=true)
      */
     protected $updated;
 
     /**
-     * @ORM\Column(type="string", length=255)
+     * @ORM\Column(type="string", length=255, nullable=true)
      */
     protected $permissions;
-
-    /**
-     * @ORM\Column(type="integer")
-     */
-    protected $number_sites;
 
     /**
      * @ORM\ManyToMany(targetEntity="Site")
@@ -225,30 +225,6 @@ class Theme
     }
 
     /**
-     * Set numberSites
-     *
-     * @param integer $numberSites
-     *
-     * @return Theme
-     */
-    public function setNumberSites($numberSites)
-    {
-        $this->number_sites = $numberSites;
-
-        return $this;
-    }
-
-    /**
-     * Get numberSites
-     *
-     * @return integer
-     */
-    public function getNumberSites()
-    {
-        return $this->number_sites;
-    }
-
-    /**
      * Add site
      *
      * @param \AppBundle\Entity\Site $site
@@ -325,4 +301,28 @@ class Theme
         $this->notes = new \Doctrine\Common\Collections\ArrayCollection();
     }
 
+
+    /**
+     * Set installed
+     *
+     * @param boolean $installed
+     *
+     * @return Theme
+     */
+    public function setInstalled($installed)
+    {
+        $this->installed = $installed;
+
+        return $this;
+    }
+
+    /**
+     * Get installed
+     *
+     * @return boolean
+     */
+    public function getInstalled()
+    {
+        return $this->installed;
+    }
 }
