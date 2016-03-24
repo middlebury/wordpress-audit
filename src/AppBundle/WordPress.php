@@ -45,6 +45,8 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['meta_value']);
+        
+        $connection = null;
 
         foreach ($data->checked as $plugin => $version) {
             $record = array();
@@ -98,7 +100,8 @@ class WordPress
         return null;
     }
 
-    private function runPluginUpdatedTime($name, $branch) {
+    private function runPluginUpdatedTime($name, $branch)
+    {
         $builder = new ProcessBuilder();
         $process = $builder->setPrefix('git')
             ->add('--git-dir=' . $this->install_path . '.git')
@@ -123,11 +126,35 @@ class WordPress
         $statement = $connection->prepare("SELECT blog_id, domain, path FROM wp_blogs");
         $statement->execute();
         $rows = $statement->fetchAll();
+        
+        $connection = null;
 
         foreach ($rows as $row) {
+            $row['plugins'] = $this->getSitePlugins($row['blog_id']);
+
             $sites[$row['domain'] . $row['path']] = $row;
         }
 
         return $sites;
+    }
+    
+    public function getSitePlugins($site_id)
+    {
+        $plugins = array();
+        
+        if (!is_int($site_id)) {
+            return $plugins;
+        }
+        
+        $connection = $this->getConnection();
+
+        $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='active_plugins'");
+        $statement->execute();
+        $row = $statement->fetch();
+        $data = unserialize($row['option_value']);
+        
+        $connection = null;
+        
+        return array_merge($plugins, $data);
     }
 }
