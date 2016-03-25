@@ -2,16 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\NoteType;
 use AppBundle\Entity\Note;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
-use Symfony\Component\Form\Extension\Core\Type\TextType;
-use Symfony\Component\Form\Extension\Core\Type\TextareaType;
-use Symfony\Component\Form\Extension\Core\Type\DateType;
-use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 
 class PluginsController extends Controller
 {
@@ -42,15 +39,7 @@ class PluginsController extends Controller
             
         $note = new Note();
 
-        $form = $this->createFormBuilder($note)
-            ->add('author', TextType::class)
-            ->add('date', DateType::class, array(
-                'data' => new \DateTime('now'),
-                'disabled' => true,
-            ))
-            ->add('note', TextareaType::class)
-            ->add('save', SubmitType::class, array('label' => 'Add Note'))
-            ->getForm();
+        $form = $this->createForm(NoteType::class, $note);
             
         $form->handleRequest($request);
         
