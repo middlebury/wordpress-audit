@@ -19,7 +19,7 @@ class SitesController extends Controller
             ->getRepository('AppBundle:Site')
             ->findAll();
 
-        return $this->render('sites.html.twig', [
+        return $this->render('site/sites.html.twig', [
             'title' => "WordPress Sites",
             'sites' => $sites,
         ]);
@@ -51,7 +51,7 @@ class SitesController extends Controller
             return $this->redirectToRoute('show_site', array('siteId' => $siteId));
         }
 
-        return $this->render('site.html.twig', [
+        return $this->render('site/site.html.twig', [
             'title' => "WordPress Sites: " . $site->getDomain() . $site->getPath(),
             'site' => $site,
             'form' => $form->createView(),

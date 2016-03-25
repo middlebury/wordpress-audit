@@ -22,7 +22,7 @@ class PluginsController extends Controller
             ->getRepository('AppBundle:Plugin')
             ->findAll();
 
-        return $this->render('plugins.html.twig', [
+        return $this->render('plugin/plugins.html.twig', [
             'title' => "WordPress Plugins",
             'plugins' => $plugins,
         ]);
@@ -54,7 +54,7 @@ class PluginsController extends Controller
             return $this->redirectToRoute('show_plugin', array('pluginName' => $pluginName));
         }
 
-        return $this->render('plugin.html.twig', [
+        return $this->render('plugin/plugin.html.twig', [
             'title' => "WordPress Plugins: " . $pluginName,
             'plugin' => $plugin,
             'form' => $form->createView(),

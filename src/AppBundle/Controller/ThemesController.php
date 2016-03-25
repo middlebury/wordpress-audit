@@ -19,7 +19,7 @@ class ThemesController extends Controller
             ->getRepository('AppBundle:Theme')
             ->findAll();
 
-        return $this->render('themes.html.twig',[
+        return $this->render('theme/themes.html.twig',[
             'title' => "WordPress Themes",
             'themes' => $themes,
         ]);
@@ -51,7 +51,7 @@ class ThemesController extends Controller
             return $this->redirectToRoute('show_theme', array('themeName' => $themeName));
         }
 
-        return $this->render('theme.html.twig', [
+        return $this->render('theme/theme.html.twig', [
             'title' => "WordPress Themes: " . $themeName,
             'theme' => $theme,
             'form' => $form->createView(),
