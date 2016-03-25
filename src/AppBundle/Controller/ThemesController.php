@@ -33,10 +33,28 @@ class ThemesController extends Controller
         $theme = $this->getDoctrine()
             ->getRepository('AppBundle:Theme')
             ->findOneByName($themeName);
+
+        $note = new Note();
+
+        $form = $this->createForm(NoteType::class, $note);
+            
+        $form->handleRequest($request);
         
+        if ($form->isSubmitted() && $form->isValid()) {            
+            $theme->addNote($note);
+            
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($theme);
+            $em->persist($note);
+            $em->flush();
+
+            return $this->redirectToRoute('show_theme', array('themeName' => $themeName));
+        }
+
         return $this->render('theme.html.twig', [
             'title' => "WordPress Themes: " . $themeName,
             'theme' => $theme,
+            'form' => $form->createView(),
         ]);
     }
 }

@@ -41,27 +41,7 @@
     <li>Adam Franco ({{ 'now'|date('Y-m-d') }}): I customized this to change its architecture.</li>
   </ul>
   <h2><a name="add-note">Add Note</a></h2>
-  <form>
-    <p>
-      <label for="wordpress-audit-note-name">Site</label>
-      <input id="wordpress-audit-note-name" size="50" type="text" disabled value="{{ site.domain ~ site.path }}" />
-    </p>
-
-    <p>
-      <label for="wordpress-audit-note-author">Author</label>
-      <input id="wordpress-audit-note-author" size="50" type="text" disabled value="Current User" />
-    </p>
-
-    <p>
-      <label for="wordpress-audit-note-date">Date</label>
-      <input id="wordpress-audit-note-date" size="50" type="date" disabled value="{{ 'now'|date('Y-m-d')}}" />
-    </p>
-
-    <p>
-      <label for="wordpress-audit-note-note">
-      <textarea id="wordpress-audit-note-note" cols="50" rows="10"></textarea>
-    </p>
-
-    <p><input type="submit" value="Add Note" /></p>
-  </form>
+  {{ form_start(form) }}
+  {{ form_widget(form) }}
+  {{ form_end(form) }}
 {% endblock %}
