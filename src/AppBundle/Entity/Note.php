@@ -16,6 +16,16 @@ class Note
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+    
+    /**
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $author;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    protected $date;
 
     /**
      * @ORM\Column(type="text")
@@ -54,5 +64,53 @@ class Note
     public function getNote()
     {
         return $this->note;
+    }
+
+    /**
+     * Set author
+     *
+     * @param string $author
+     *
+     * @return Note
+     */
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * Get author
+     *
+     * @return string
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return Note
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 }
