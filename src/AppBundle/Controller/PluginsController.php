@@ -44,7 +44,10 @@ class PluginsController extends Controller
 
         $form = $this->createFormBuilder($note)
             ->add('author', TextType::class)
-            ->add('date', DateType::class)
+            ->add('date', DateType::class, array(
+                'data' => new \DateTime('now'),
+                'disabled' => true,
+            ))
             ->add('note', TextareaType::class)
             ->add('save', SubmitType::class, array('label' => 'Add Note'))
             ->getForm();
