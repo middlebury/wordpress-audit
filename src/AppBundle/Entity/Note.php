@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -18,16 +19,20 @@ class Note
     protected $id;
     
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="string", length=255)
      */
     protected $author;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Type("\DateTime")
      * @ORM\Column(type="date")
      */
     protected $date;
 
     /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="text")
      */
     protected $note;
