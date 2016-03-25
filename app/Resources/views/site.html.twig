@@ -34,11 +34,9 @@
   </ul>
   <h2><a name="notes">Notes</a></h2>
   <ul>
-    <li>Ian McBride ({{ 'now'|date('Y-m-d') }}): Probably the best thing in WordPress!</li>
-    <li>Jon Maddix ({{ 'now'|date('Y-m-d') }}): Don't upgrade this. It will break.</li>
-    <li>Steve Nelson ({{ 'now'|date('Y-m-d') }}): Not used any more.</li>
-    <li>Melissa Floyd ({{ 'now'|date('Y-m-d') }}): Being used again.</li>
-    <li>Adam Franco ({{ 'now'|date('Y-m-d') }}): I customized this to change its architecture.</li>
+    {% for note in site.notes %}
+      <li>{{ note.author }} ({{ note.date|date('Y-m-d') }}): {{ note.note }}</li>
+    {% endfor %}
   </ul>
   <h2><a name="add-note">Add Note</a></h2>
   {{ form_start(form) }}
