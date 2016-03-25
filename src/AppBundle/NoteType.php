@@ -17,11 +17,20 @@ class NoteType extends AbstractType
     public function buildForm(FormBuilderInterface $builder, array $options)
     {
         $builder
-            ->add('author', TextType::class)
+            ->add('author', TextType::class, array(
+                'attr' => array(
+                    'size' => "50",
+                ),
+            ))
             ->add('date', DateType::class, array(
                 'data' => new \DateTime('now'),
             ))
-            ->add('note', TextareaType::class)
+            ->add('note', TextareaType::class, array(
+                'attr' => array(
+                    'cols' => "50",
+                    'rows' => "10",
+                ),
+            ))
             ->add('save', SubmitType::class, array('label' => 'Add Note'));
     }
 
