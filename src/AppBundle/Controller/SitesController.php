@@ -2,10 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\NoteType;
+use AppBundle\Entity\Note;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class SitesController extends Controller
 {
@@ -28,7 +31,7 @@ class SitesController extends Controller
     /**
      * @Route("/sites/{siteId}", name="show_site")
      */
-    public function showAction($siteId)
+    public function showAction($siteId, Request $request)
     {
         $site = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
@@ -37,12 +40,12 @@ class SitesController extends Controller
         $note = new Note();
 
         $form = $this->createForm(NoteType::class, $note);
-            
+
         $form->handleRequest($request);
-        
-        if ($form->isSubmitted() && $form->isValid()) {            
+
+        if ($form->isSubmitted() && $form->isValid()) {
             $site->addNote($note);
-            
+
             $em = $this->getDoctrine()->getManager();
             $em->persist($site);
             $em->persist($note);

@@ -2,10 +2,13 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\NoteType;
+use AppBundle\Entity\Note;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
+use Symfony\Component\HttpFoundation\Request;
 
 class ThemesController extends Controller
 {
@@ -28,7 +31,7 @@ class ThemesController extends Controller
     /**
      * @Route("/themes/{themeName}", name="show_theme")
      */
-    public function showAction($themeName)
+    public function showAction($themeName, Request $request)
     {
         $theme = $this->getDoctrine()
             ->getRepository('AppBundle:Theme')
