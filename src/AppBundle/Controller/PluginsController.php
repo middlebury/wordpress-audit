@@ -13,7 +13,7 @@ class PluginsController extends Controller
      * @Route("/plugins", name="list_plugins")
      * @Method("GET")
      */
-    public function listPlugins()
+    public function listAction()
     {
         $plugins = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')
@@ -28,7 +28,7 @@ class PluginsController extends Controller
     /**
      * @Route("/plugins/{pluginName}", name="show_plugin")
      */
-    public function showPlugin($pluginName)
+    public function showAction($pluginName)
     {
         $plugin = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')

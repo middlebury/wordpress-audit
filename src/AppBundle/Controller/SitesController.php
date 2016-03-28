@@ -13,7 +13,7 @@ class SitesController extends Controller
      * @Route("/sites", name="list_sites")
      * @Method("GET")
      */
-    public function listSites()
+    public function listAction()
     {
         $sites = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
@@ -28,7 +28,7 @@ class SitesController extends Controller
     /**
      * @Route("/sites/{siteId}", name="show_site")
      */
-    public function showSite($siteId)
+    public function showAction($siteId)
     {
         $site = $this->getDoctrine()
             ->getRepository('AppBundle:Site')

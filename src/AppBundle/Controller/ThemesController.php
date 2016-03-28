@@ -13,7 +13,7 @@ class ThemesController extends Controller
      * @Route("/themes", name="list_themes")
      * @Method("GET")
      */
-    public function listThemes()
+    public function listAction()
     {
         $themes = $this->getDoctrine()
             ->getRepository('AppBundle:Theme')
@@ -28,12 +28,12 @@ class ThemesController extends Controller
     /**
      * @Route("/themes/{themeName}", name="show_theme")
      */
-    public function showTheme($themeName)
+    public function showAction($themeName)
     {
         $theme = $this->getDoctrine()
             ->getRepository('AppBundle:Theme')
             ->findOneByName($themeName);
-        
+
         return $this->render('theme.html.twig', [
             'title' => "WordPress Themes: " . $themeName,
             'theme' => $theme,
