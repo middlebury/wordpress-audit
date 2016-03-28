@@ -164,9 +164,44 @@ class WordPress
      */
     public function getPlugins()
     {
-        $plugins = array();
+        $plugins = $installed = $updates = array();
 
         $connection = $this->getConnection();
+
+        $plugins_dir = scandir($this->install_path . $this->plugins_path);
+        foreach ($plugins_dir as $plugin_dir) {
+            if ($plugin_dir == '.' || $plugin_dir == '..') {
+                // Ignore the current and parent directories.
+                continue;
+            }
+
+            if (is_file($this->install_path .
+                $this->plugins_path . $plugin_dir)) {
+
+                // This plugin doesn't have a directory.
+                $installed[] = $plugin_dir;
+            } else if (is_dir($this->install_path .
+                $this->plugins_path . $plugin_dir)) {
+
+                $plugin_files = scandir($this->install_path .
+                    $this->plugins_path . $plugin_dir);
+                foreach ($plugin_files as $file) {
+                    if (is_file($this->install_path .
+                        $this->plugins_path . $plugin_dir . '/' . $file)) {
+
+                        $uri = $this->getDocBlockToken("Plugin\sName",
+                            $this->plugins_path, $plugin_dir . '/' . $file);
+                        if (!empty($uri)) {
+                            $installed[] = $plugin_dir . '/' . $file;
+                            break;
+                        }
+                    }
+                }
+            } else {
+                // Neither a file nor a directory. Possibly a link. Ignore.
+                continue;
+            }
+        }
 
         // _site_transient_update_plugins stores data from the last time the
         // network administration interface checked for updates from
@@ -178,9 +213,9 @@ class WordPress
         );
         $statement->execute();
         $row = $statement->fetch();
-        $data = unserialize($row['meta_value']);
+        $updates = unserialize($row['meta_value']);
 
-        foreach ($data->checked as $plugin => $version) {
+        foreach ($installed as $plugin) {
             $record = array();
 
             // Some plugins have directories, some don't. This allows us to get
@@ -188,12 +223,12 @@ class WordPress
             $slugs = preg_split('/\//', $plugin);
 
             // There is an update available for this plugin on wordpress.org
-            if (!empty($data->response[$plugin])) {
-                $record = get_object_vars($data->response[$plugin]);
+            if (!empty($updates->response[$plugin])) {
+                $record = get_object_vars($updates->response[$plugin]);
 
             // There is no update available for this plugin on wordpress.org
-            } else if (!empty($data->no_update[$plugin])) {
-                $record = get_object_vars($data->no_update[$plugin]);
+            } else if (!empty($updates->no_update[$plugin])) {
+                $record = get_object_vars($updates->no_update[$plugin]);
 
             // This plugin wasn't found on wordpress.org. It is probably one
             // that was created locally for this installation of WordPress.
@@ -201,14 +236,18 @@ class WordPress
                 $record['slug'] = $slugs[0];
             }
 
-            $record['version'] = $version;
+            $record['version'] = $this->getDocBlockToken("Version",
+                $this->plugins_path,
+                $plugin);
 
             // Get the last updated time from git.
             $record['updated'] = $this->getUpdatedTime($slugs[0],
                 $this->plugins_path);
 
             // Get the plugin author from the file.
-            $record['author'] = $this->getAuthor($this->plugins_path, $plugin);
+            $record['author'] = $this->getDocBlockToken("Author",
+                $this->plugins_path,
+                $plugin);
 
             $plugins[$plugin] = $record;
         }
@@ -318,7 +357,8 @@ class WordPress
                 $this->themes_path);
 
             // Get the plugin author from the file.
-            $record['author'] = $this->getAuthor($this->themes_path,
+            $record['author'] = $this->getDocBlockToken("Author",
+                $this->themes_path,
                 $theme . '/style.css');
 
             $themes[$theme] = $record;
@@ -397,37 +437,38 @@ class WordPress
     }
 
     /**
-     * Get the name(s) or authors of a plugin or theme.
+     * Get the value(s) of a token from the DocBlock of a plugin or theme.
      *
-     * WordPress asks plugin and theme authors to list this in a docblock of
-     * their main plugin file or theme style.css file in the form "Author:
-     * names of authors". This function will parse a given file and extract the
-     * authors from first line matching that pattern.
+     * WordPress asks plugin and theme authors to list metadata in a docblock of
+     * their main plugin file or theme style.css file in the form "Key: value".
+     * This function will parse a given file and extract the values from first
+     * line matching the given key.
      *
+     * @param string $key   The key to a DocBlock section, like "Author".
      * @param string $path  A path to the directory or file to check.
      * @param string $name  The name of the directory or file to check.
      *
      * @return string The name(s) of the authors or a blank string.
      */
-    private function getAuthor($path, $name)
+    private function getDocBlockToken($key, $path, $name)
     {
-        $author = '';
+        $value = '';
 
         $handle = @fopen($this->install_path . $path . $name, "r");
         if ($handle) {
             while (!feof($handle)) {
                 $buffer = fgets($handle);
                 $matches = array();
-                preg_match('/Author:\s([^\n]*)\n/', $buffer, $matches);
+                preg_match('/\s*' . $key . ':\s([^\n]*)\n/', $buffer, $matches);
                 if (!empty($matches[1])) {
-                    $author = trim($matches[1]);
+                    $value = trim($matches[1]);
                     break;
                 }
             }
             fclose($handle);
         }
 
-        return $author;
+        return $value;
     }
 
     /**
