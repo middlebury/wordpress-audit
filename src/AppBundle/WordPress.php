@@ -18,7 +18,7 @@ class WordPress
     protected $install_path;
 
     protected $plugins_path;
-    
+
     protected $themes_path;
 
     protected $branches;
@@ -36,25 +36,25 @@ class WordPress
     {
         return new PDO("mysql:host=$this->database_host;dbname=$this->database_name", $this->database_user, $this->database_password);
     }
-    
+
     public function getThemes()
     {
         $themes = array();
-        
+
         $connection = $this->getConnection();
-        
+
         $statement = $connection->prepare("SELECT meta_value FROM wp_sitemeta WHERE meta_key='_site_transient_update_themes'");
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['meta_value']);
-        
+
         foreach ($data->checked as $theme => $version) {
             $record = array();
             $record['theme'] = $theme;
             $record['version'] = $version;
 
             if (!empty($data->response[$theme])) {
-                $record['new_version'] = $data->response[$theme]['new_version'];                
+                $record['new_version'] = $data->response[$theme]['new_version'];
             }
 
             // Get the last updated time from git.
@@ -62,10 +62,10 @@ class WordPress
 
             // Get the plugin author from the file.
             $record['author'] = $this->getAuthor($this->themes_path, $theme . '/style.css');
-            
+
             $themes[$theme] = $record;
         }
-        
+
         return $themes;
     }
 
@@ -137,11 +137,11 @@ class WordPress
 
         return $process->getOutput();
     }
-    
+
     private function getAuthor($path, $name)
     {
         $author = '';
-        
+
         $handle = @fopen($this->install_path . $path . $name, "r");
         if ($handle) {
             while (!feof($handle)) {
@@ -155,7 +155,7 @@ class WordPress
             }
             fclose($handle);
         }
-        
+
         return $author;
     }
 
@@ -178,47 +178,47 @@ class WordPress
 
         return $sites;
     }
-    
+
     private function getSitePlugins($site_id)
     {
         $plugins = array();
-        
+
         if (!is_numeric($site_id)) {
             return $plugins;
         }
-        
+
         $connection = $this->getConnection();
 
         $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='active_plugins'");
         $statement->execute();
         $row = $statement->fetch();
         $data = unserialize($row['option_value']);
-        
+
         if (!empty($data)) {
             $plugins = array_merge($plugins, $data);
         }
-        
+
         return $plugins;
     }
-    
+
     private function getSiteTheme($site_id)
     {
         $theme = '';
-        
+
         if (!is_numeric($site_id)) {
             return $theme;
         }
-        
+
         $connection = $this->getConnection();
-        
+
         $statement = $connection->prepare("SELECT option_value FROM wp_" . $site_id . "_options WHERE option_name='template'");
         $statement->execute();
         $row = $statement->fetch();
-        
+
         if (!empty($row['option_value'])) {
             $theme = $row['option_value'];
         }
-        
+
         return $theme;
     }
 }
