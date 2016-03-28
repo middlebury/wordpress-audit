@@ -14,6 +14,19 @@ use Symfony\Component\HttpFoundation\Response;
 class RefreshController extends Controller
 {
     /**
+     * @Route("/refresh", name="refresh_all")
+     * @Method("GET")
+     */
+    public function refreshAction()
+    {
+        $response = $this->forward('AppBundle:Controller:RefreshController:plugins');
+        $response = $this->forward('AppBundle:Controller:RefreshController:themes');
+        $response = $this->forward('AppBundle:Controller:RefreshController:sites');
+
+        return $response;
+    }
+
+    /**
      * @Route("/refresh/sites", name="refresh_sites")
      * @Method("GET")
      */
