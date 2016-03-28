@@ -19,7 +19,7 @@ class SitesController extends Controller
             ->getRepository('AppBundle:Site')
             ->findAll();
 
-        return $this->render('sites.html.twig', [
+        return $this->render('site/sites.html.twig', [
             'title' => "WordPress Sites",
             'sites' => $sites,
         ]);
@@ -34,9 +34,27 @@ class SitesController extends Controller
             ->getRepository('AppBundle:Site')
             ->find($siteId);
 
-        return $this->render('site.html.twig', [
+        $note = new Note();
+
+        $form = $this->createForm(NoteType::class, $note);
+            
+        $form->handleRequest($request);
+        
+        if ($form->isSubmitted() && $form->isValid()) {            
+            $site->addNote($note);
+            
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($site);
+            $em->persist($note);
+            $em->flush();
+
+            return $this->redirectToRoute('show_site', array('siteId' => $siteId));
+        }
+
+        return $this->render('site/site.html.twig', [
             'title' => "WordPress Sites: " . $site->getDomain() . $site->getPath(),
             'site' => $site,
+            'form' => $form->createView(),
         ]);
     }
 }

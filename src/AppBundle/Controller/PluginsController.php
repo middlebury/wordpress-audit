@@ -2,9 +2,12 @@
 
 namespace AppBundle\Controller;
 
+use AppBundle\NoteType;
+use AppBundle\Entity\Note;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
+use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
 class PluginsController extends Controller
@@ -19,7 +22,7 @@ class PluginsController extends Controller
             ->getRepository('AppBundle:Plugin')
             ->findAll();
 
-        return $this->render('plugins.html.twig', [
+        return $this->render('plugin/plugins.html.twig', [
             'title' => "WordPress Plugins",
             'plugins' => $plugins,
         ]);
@@ -28,15 +31,33 @@ class PluginsController extends Controller
     /**
      * @Route("/plugins/{pluginName}", name="show_plugin")
      */
-    public function showAction($pluginName)
+    public function showPlugin($pluginName)
     {
         $plugin = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')
             ->findOneByName($pluginName);
 
-        return $this->render('plugin.html.twig', [
+        $note = new Note();
+
+        $form = $this->createForm(NoteType::class, $note);
+
+        $form->handleRequest($request);
+
+        if ($form->isSubmitted() && $form->isValid()) {
+            $plugin->addNote($note);
+
+            $em = $this->getDoctrine()->getManager();
+            $em->persist($plugin);
+            $em->persist($note);
+            $em->flush();
+
+            return $this->redirectToRoute('show_plugin', array('pluginName' => $pluginName));
+        }
+
+        return $this->render('plugin/plugin.html.twig', [
             'title' => "WordPress Plugins: " . $pluginName,
             'plugin' => $plugin,
+            'form' => $form->createView(),
         ]);
     }
 }

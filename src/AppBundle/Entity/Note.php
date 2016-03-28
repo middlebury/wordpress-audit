@@ -3,6 +3,7 @@
 namespace AppBundle\Entity;
 
 use Doctrine\ORM\Mapping as ORM;
+use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity
@@ -16,8 +17,22 @@ class Note
      * @ORM\GeneratedValue(strategy="AUTO")
      */
     protected $id;
+    
+    /**
+     * @Assert\NotBlank()
+     * @ORM\Column(type="string", length=255)
+     */
+    protected $author;
 
     /**
+     * @Assert\NotBlank()
+     * @Assert\Type("\DateTime")
+     * @ORM\Column(type="date")
+     */
+    protected $date;
+
+    /**
+     * @Assert\NotBlank()
      * @ORM\Column(type="text")
      */
     protected $note;
@@ -54,5 +69,53 @@ class Note
     public function getNote()
     {
         return $this->note;
+    }
+
+    /**
+     * Set author
+     *
+     * @param string $author
+     *
+     * @return Note
+     */
+    public function setAuthor($author)
+    {
+        $this->author = $author;
+
+        return $this;
+    }
+
+    /**
+     * Get author
+     *
+     * @return string
+     */
+    public function getAuthor()
+    {
+        return $this->author;
+    }
+
+    /**
+     * Set date
+     *
+     * @param \DateTime $date
+     *
+     * @return Note
+     */
+    public function setDate($date)
+    {
+        $this->date = $date;
+
+        return $this;
+    }
+
+    /**
+     * Get date
+     *
+     * @return \DateTime
+     */
+    public function getDate()
+    {
+        return $this->date;
     }
 }
