@@ -2,10 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Network;
 use AppBundle\Entity\Plugin;
 use AppBundle\Entity\Site;
 use AppBundle\Entity\Theme;
+use AppBundle\WordPress\Network;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
