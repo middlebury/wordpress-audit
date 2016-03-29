@@ -14,6 +14,7 @@
     <thead>
       <tr>
         <th>Name</th>
+        <th>Installed</th>
         <th>Author</th>
         <th>Installed Version</th>
         <th>Available Version</th>
@@ -26,6 +27,7 @@
       {% for theme in themes %}
         <tr>
           <td><a href="{{ path('show_theme', {'themeName': theme.name }) }}">{{ theme.name }}</a></td>
+          <td>{{ theme.installed == 1 ? 'Yes' : 'No' }}</td>
           <td>{{ theme.author }}</td>
           <td>{{ theme.installedVersion }}</td>
           <td>{{ theme.availableVersion }}</td>

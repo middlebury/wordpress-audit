@@ -7,6 +7,9 @@
 {% block content %}
   <p><a href="#sites">Sites</a> | <a href="#notes">Notes</a> | <a href="#add-note">Add Note</a></p>
   <dl>
+    <dt>Installed</dt>
+    <dd>{{ plugin.installed == 1 ? 'Yes' : 'No' }}</dd>
+
     <dt>Author</dt>
     <dd>{{ plugin.author }}</dd>
 
