@@ -2,6 +2,7 @@
 
 namespace AppBundle\WordPress;
 
+use Symfony\Component\Finder\Finder;
 use Symfony\Component\Process\ProcessBuilder;
 use \PDO;
 
@@ -168,38 +169,20 @@ class WordPress
 
         $connection = $this->getConnection();
 
-        $plugins_dir = scandir($this->install_path . $this->plugins_path);
-        foreach ($plugins_dir as $plugin_dir) {
-            if ($plugin_dir == '.' || $plugin_dir == '..') {
-                // Ignore the current and parent directories.
-                continue;
-            }
+        $finder = new Finder();
+        $finder->files()
+            ->name('*.php')
+            // Get the plugins that are just files in the plugins
+            // directory and plugins that have their own directories.
+            ->depth('< 2')
+            ->in($this->install_path . $this->plugins_path);
 
-            if (is_file($this->install_path .
-                $this->plugins_path . $plugin_dir)) {
-
-                // This plugin doesn't have a directory.
-                $installed[] = $plugin_dir;
-            } else if (is_dir($this->install_path .
-                $this->plugins_path . $plugin_dir)) {
-
-                $plugin_files = scandir($this->install_path .
-                    $this->plugins_path . $plugin_dir);
-                foreach ($plugin_files as $file) {
-                    if (is_file($this->install_path .
-                        $this->plugins_path . $plugin_dir . '/' . $file)) {
-
-                        $uri = $this->getDocBlockToken("Plugin\sName",
-                            $this->plugins_path, $plugin_dir . '/' . $file);
-                        if (!empty($uri)) {
-                            $installed[] = $plugin_dir . '/' . $file;
-                            break;
-                        }
-                    }
-                }
-            } else {
-                // Neither a file nor a directory. Possibly a link. Ignore.
-                continue;
+        foreach ($finder as $file) {
+            $filename = $file->getRelativePathname();
+            $plugin_name = $this->getDocBlockToken("Plugin Name",
+                $this->plugins_path, $filename);
+            if (!empty($plugin_name)) {
+                $installed[] = $filename;
             }
         }
 
@@ -327,9 +310,19 @@ class WordPress
      */
     public function getThemes()
     {
-        $themes = array();
+        $themes = $installed = $updates = array();
 
         $connection = $this->getConnection();
+
+        $finder = new Finder();
+        $finder->files()
+            ->name('style.css')
+            ->depth('== 1')
+            ->in($this->install_path . $this->themes_path);
+
+        foreach ($finder as $file) {
+            $installed[] = $file->getRelativePath();
+        }
 
         // _site_transient_update_themes stores data from the last time the
         // network administration interface checked for updates from
@@ -341,22 +334,31 @@ class WordPress
         );
         $statement->execute();
         $row = $statement->fetch();
-        $data = unserialize($row['meta_value']);
+        $updates = unserialize($row['meta_value']);
 
-        foreach ($data->checked as $theme => $version) {
+        foreach ($installed as $theme) {
             $record = array();
             $record['theme'] = $theme;
-            $record['version'] = $version;
 
-            if (!empty($data->response[$theme])) {
-                $record['new_version'] = $data->response[$theme]['new_version'];
+            // Try to find the version number in the data sent to wordpress.org
+            if (!empty($updates->checked[$theme])) {
+                $record['version'] = $updates->checked[$theme];
+            // Try to find the version number in the theme's stylesheet
+            } else {
+                $record['version'] = $this->getDocBlockToken("Version",
+                    $this->themes_path,
+                    $theme . '/style.css');
+            }
+
+            if (!empty($updates->response[$theme])) {
+                $record['new_version'] = $updates->response[$theme]['new_version'];
             }
 
             // Get the last updated time from git.
             $record['updated'] = $this->getUpdatedTime($theme,
                 $this->themes_path);
 
-            // Get the plugin author from the file.
+            // Get the theme author from the file.
             $record['author'] = $this->getDocBlockToken("Author",
                 $this->themes_path,
                 $theme . '/style.css');
