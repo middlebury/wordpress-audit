@@ -19,11 +19,24 @@ class RefreshController extends Controller
      */
     public function refreshAction()
     {
-        $response = $this->forward('AppBundle:Controller:RefreshController:plugins');
-        $response = $this->forward('AppBundle:Controller:RefreshController:themes');
-        $response = $this->forward('AppBundle:Controller:RefreshController:sites');
+        $results = array();
 
-        return $response;
+        if ($this->forward('AppBundle:Refresh:plugins')->isSuccessful()) {
+            $results[] = "WordPress Plugins Refreshed.";
+        }
+
+        if ($this->forward('AppBundle:Refresh:themes')->isSuccessful()) {
+            $results[] = "WordPress Themes Refreshed.";
+        }
+
+        if ($this->forward('AppBundle:Refresh:sites')->isSuccessful()) {
+            $results[] = "WordPress Sites Refreshed.";
+        }
+
+        return $this->render('refresh.html.twig', [
+            'title' => "WordPress Refreshed",
+            'results' => $results,
+        ]);
     }
 
     /**
@@ -66,7 +79,10 @@ class RefreshController extends Controller
                     $plugin = $this->getDoctrine()
                         ->getRepository('AppBundle:Plugin')
                         ->findOneBy(array('file' => $file));
-                    $site->addPlugin($plugin);
+
+                    if (!empty($plugin)) {
+                        $site->addPlugin($plugin);
+                    }
                 }
 
                 $theme = $this->getDoctrine()
@@ -98,7 +114,10 @@ class RefreshController extends Controller
                 $plugin = $this->getDoctrine()
                     ->getRepository('AppBundle:Plugin')
                     ->findOneBy(array('file' => $file));
-                $site->addPlugin($plugin);
+
+                if (!empty($plugin)) {
+                    $site->addPlugin($plugin);
+                }
             }
 
             $theme = $this->getDoctrine()
