@@ -33,7 +33,7 @@ class Site
     protected $path;
 
     /**
-     * @ORM\OneToOne(targetEntity="Theme")
+     * @ORM\ManyToOne(targetEntity="Theme")
      * @ORM\JoinColumn(name="theme_id", referencedColumnName="id")
      */
     protected $theme;
