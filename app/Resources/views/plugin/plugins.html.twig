@@ -15,7 +15,6 @@
       <tr>
         <th>Name</th>
         <th>Installed</th>
-        <th>Author</th>
         <th>Installed Version</th>
         <th>Available Version</th>
         <th>Updated</th>
@@ -27,7 +26,6 @@
         <tr>
           <td><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></td>
           <td>{{ plugin.installed == 1 ? 'Yes' : 'No' }}</td>
-          <td>{{ plugin.author }}</td>
           <td>{{ plugin.installedVersion }}</td>
           <td>{{ plugin.availableVersion }}</td>
           <td>{{ plugin.updated|date('Y-m-d') }}</td>

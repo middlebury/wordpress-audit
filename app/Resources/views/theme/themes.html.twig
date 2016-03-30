@@ -15,11 +15,9 @@
       <tr>
         <th>Name</th>
         <th>Installed</th>
-        <th>Author</th>
         <th>Installed Version</th>
         <th>Available Version</th>
         <th>Updated</th>
-        <th>Permissions</th>
         <th>Number of Sites</th>
       </tr>
     </thead>
@@ -28,11 +26,9 @@
         <tr>
           <td><a href="{{ path('show_theme', {'themeName': theme.name }) }}">{{ theme.name }}</a></td>
           <td>{{ theme.installed == 1 ? 'Yes' : 'No' }}</td>
-          <td>{{ theme.author }}</td>
           <td>{{ theme.installedVersion }}</td>
           <td>{{ theme.availableVersion }}</td>
           <td>{{ theme.updated|date('Y-m-d') }}</td>
-          <td>All Users</td>
           <td>{{ theme.sites|length }}</td>
         </tr>
       {% endfor %}
