@@ -15,6 +15,13 @@ use \PDO;
 class WordPress
 {
     /**
+     * Domain name of this WordPress installation.
+     *
+     * @var string
+     */
+    protected $domain;
+
+    /**
      * Hostname of the database server for this WordPress installation.
      *
      * @var string
@@ -105,8 +112,10 @@ class WordPress
      * @param array $wordpresses Configuration options for this WordPress
      *     installation.
      */
-    public function __construct($settings)
+    public function __construct($domain, $settings)
     {
+        $this->domain = $domain;
+
         foreach ($settings as $key => $value) {
             if (property_exists($this, $key)) {
                 $this->$key = $value;
@@ -152,6 +161,9 @@ class WordPress
      *         'new_version' => "2.0",
      *         'updated'     => new DateTime('Jan 1, 2016 00:01:01'),
      *         'author'      => "Michael Middlebury",
+     *         'permissions' => array(
+     *             'wordpress.example.com' => 'All Users',
+     *         ),
      *     ),
      * );
      * </code>
@@ -165,7 +177,19 @@ class WordPress
      */
     public function getPlugins()
     {
-        $plugins = $installed = $updates = array();
+        // Will store the data returned by this function
+        $plugins =
+        // Lists the plugins extant in $this->install_path . $this->plugins_path
+        $installed =
+        // Lists the data returned by wordpress.org on plugin updates
+        $updates =
+        // Lists the plugins that are active on all sites
+        $network_activate =
+        // Lists the plugins that are auto activated on new sites
+        $auto_activate =
+        // Lists the plugins that users can activate themselves
+        $user_activate =
+            array();
 
         $connection = $this->getConnection();
 
@@ -197,6 +221,42 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $updates = unserialize($row['meta_value']);
+
+        // active_sitewide_plugins stores a list of the plugins that are
+        // activated on every site on this installation of WordPress and which
+        // cannot be deactivated by users.
+        $statement = $connection->prepare(
+            "SELECT meta_value
+             FROM wp_sitemeta
+             WHERE meta_key='active_sitewide_plugins'"
+        );
+        $statement->execute();
+        $row = $statement->fetch();
+        $network_activate = unserialize($row['meta_value']);
+
+        // pm_auto_activate_list stores a list of the plugins that are
+        // activated automatically on all new sites, but which users are
+        // allowed to deactivate. Provided by Multisite Plugin Manager.
+        $statement = $connection->prepare(
+            "SELECT meta_value
+             FROM wp_sitemeta
+             WHERE meta_key='pm_auto_activate_list'"
+        );
+        $statement->execute();
+        $row = $statement->fetch();
+        $auto_activate = unserialize($row['meta_value']);
+
+        // pm_user_control_list stores a list of the plugins that users
+        // are allowed to activate on their sites. Plugins which are not in this
+        // list can only be activated by Network Admins.
+        $statement = $connection->prepare(
+            "SELECT meta_value
+             FROM wp_sitemeta
+             WHERE meta_key='pm_user_control_list'"
+        );
+        $statement->execute();
+        $row = $statement->fetch();
+        $user_activate = unserialize($row['meta_value']);
 
         foreach ($installed as $plugin) {
             $record = array();
@@ -231,6 +291,19 @@ class WordPress
             $record['author'] = $this->getDocBlockToken("Author",
                 $this->plugins_path,
                 $plugin);
+
+            // Gather data on the permissions associated with the plugin
+            $record['permissions'][$this->domain] = 'None';
+            if (in_array($plugin, $network_activate)) {
+                $record['permissions'][$this->domain] =
+                    'Network Activate';
+            } else if (in_array($plugin, $auto_activate)) {
+                $record['permissions'][$this->domain] =
+                    'Auto Activate';
+            } else if (in_array($plugin, $user_activate)) {
+                $record['permissions'][$this->domain] =
+                    'All Users';
+            }
 
             $plugins[$plugin] = $record;
         }

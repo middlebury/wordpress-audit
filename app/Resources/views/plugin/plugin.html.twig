@@ -23,7 +23,13 @@
     <dd>{{ plugin.updated|date('Y-m-d') }}</dd>
 
     <dt>Permissions</dt>
-    <dd>All Users</dd>
+    <dd>
+      <ul>
+        {% for domain, permission in plugin.permissions|unserialize %}
+          <li>{{ domain }}: {{ permission }}</li>
+        {% endfor %}
+      </ul>
+    </dd>
 
     <dt>Number of Sites</dt>
     <dd>{{ plugin.sites|length }}</dd>

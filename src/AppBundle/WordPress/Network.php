@@ -36,7 +36,7 @@ class Network
     public function __construct($wordpresses)
     {
         foreach ($wordpresses as $domain => $wordpress) {
-            $this->wordpresses[] = new WordPress($wordpress);
+            $this->wordpresses[] = new WordPress($domain, $wordpress);
         }
     }
 
@@ -53,7 +53,8 @@ class Network
         $plugins = array();
 
         foreach ($this->wordpresses as $wordpress) {
-            $plugins = array_merge($plugins, $wordpress->getPlugins());
+            $plugins = array_replace_recursive($plugins,
+                $wordpress->getPlugins());
         }
 
         return $plugins;

@@ -274,6 +274,10 @@ class RefreshController extends Controller
                     $plugin->setUpdated($wordpress_plugins[$file]['updated']);
                 }
 
+                if (!empty($wordpress_plugins[$file]['permissions'])) {
+                    $plugin->setPermissions(serialize($wordpress_plugins[$file]['permissions']));
+                }
+
                 unset($wordpress_plugins[$file]);
 
                 $results[] = 'Updated plugin record for ' . $plugin->getName();
@@ -303,6 +307,10 @@ class RefreshController extends Controller
 
             if (!empty($wordpress_plugin['updated'])) {
                 $plugin->setUpdated($wordpress_plugin['updated']);
+            }
+
+            if (!empty($wordpress_plugin['permissions'])) {
+                $plugin->setPermissions(serialize($wordpress_plugin['permissions']));
             }
 
             $em->persist($plugin);
