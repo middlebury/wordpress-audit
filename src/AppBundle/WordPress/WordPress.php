@@ -294,7 +294,7 @@ class WordPress
 
             // Gather data on the permissions associated with the plugin
             $record['permissions'][$this->domain] = 'None';
-            if (in_array($plugin, $network_activate)) {
+            if (in_array($plugin, array_keys($network_activate))) {
                 $record['permissions'][$this->domain] =
                     'Network Activate';
             } else if (in_array($plugin, $auto_activate)) {
