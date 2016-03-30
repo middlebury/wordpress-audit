@@ -23,7 +23,13 @@
     <dd>{{ theme.updated|date('Y-m-d') }}</dd>
 
     <dt>Permissions</dt>
-    <dd>All Users</dd>
+    <dd>
+      <ul>
+        {% for domain, permission in theme.permissions|unserialize %}
+          <li>{{ domain }}: {{ permission }}</li>
+        {% endfor %}
+      </ul>
+    </dd>
 
     <dt>Number of Sites</dt>
     <dd>{{ theme.sites|length }}</dd>

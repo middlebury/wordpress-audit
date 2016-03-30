@@ -184,6 +184,10 @@ class RefreshController extends Controller
                     $theme->setAuthor($wordpress_themes[$name]['author']);
                 }
 
+                if (!empty($wordpress_themes[$name]['permissions'])) {
+                    $theme->setPermissions(serialize($wordpress_themes[$name]['permissions']));
+                }
+
                 unset($wordpress_themes[$name]);
 
                 $results[] = 'Updated theme record for ' . $theme->getName();
@@ -217,6 +221,10 @@ class RefreshController extends Controller
 
             if (!empty($wordpress_theme['author'])) {
                 $theme->setAuthor($wordpress_theme['author']);
+            }
+
+            if (!empty($wordpress_theme['permissions'])) {
+                $theme->setPermissions(serialize($wordpress_theme['permissions']));
             }
 
             $em->persist($theme);

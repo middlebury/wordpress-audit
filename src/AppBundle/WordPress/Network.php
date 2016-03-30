@@ -92,7 +92,7 @@ class Network
         $themes = array();
 
         foreach ($this->wordpresses as $wordpress) {
-            $themes = array_merge($themes, $wordpress->getThemes());
+            $themes = array_replace_recursive($themes, $wordpress->getThemes());
         }
 
         return $themes;

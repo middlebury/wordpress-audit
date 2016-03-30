@@ -375,6 +375,9 @@ class WordPress
      *         'new_version' => "2.0",
      *         'updated'     => new DateTime('Jan 1, 2016 00:01:01'),
      *         'author'      => "Michael Middlebury",
+     *         'permissions' => array(
+     *             'wordpress.example.com' => 'Enabled',
+     *         ),
      *     ),
      * );
      * </code>
@@ -383,7 +386,15 @@ class WordPress
      */
     public function getThemes()
     {
-        $themes = $installed = $updates = array();
+        // Will store the data returned by this function
+        $themes =
+        // Lists the themes extant in $this->install_path . $this->themes_path
+        $installed =
+        // Lists the data returned by wordpress.org on plugin updates
+        $updates =
+        // Lists the themes that users can activate themselves
+        $allowed =
+            array();
 
         $connection = $this->getConnection();
 
@@ -408,6 +419,15 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $updates = unserialize($row['meta_value']);
+
+        $statement = $connection->prepare(
+            "SELECT meta_value
+             FROM wp_sitemeta
+             WHERE meta_key='allowedthemes'"
+        );
+        $statement->execute();
+        $row = $statement->fetch();
+        $allowed = unserialize($row['meta_value']);
 
         foreach ($installed as $theme) {
             $record = array();
@@ -435,6 +455,13 @@ class WordPress
             $record['author'] = $this->getDocBlockToken("Author",
                 $this->themes_path,
                 $theme . '/style.css');
+
+            // Gather data on the permissions associated with the theme
+            $record['permissions'][$this->domain] = 'Disabled';
+            if (in_array($theme, array_keys($allowed))) {
+                $record['permissions'][$this->domain] =
+                    'Enabled';
+            }
 
             $themes[$theme] = $record;
         }
