@@ -1,0 +1,53 @@
+{% extends 'midd.html.twig' %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; <a href="{{ path('list_themes') }}">Themes</a> &raquo; {{ title }}
+{% endblock %}
+
+{% block content %}
+  <p><a href="#sites">Sites</a> | <a href="#notes">Notes</a> | <a href="#add-note">Add Note</a></p>
+  <dl>
+    <dt>Installed</dt>
+    <dd>{{ theme.installed == 1 ? 'Yes' : 'No' }}</dd>
+
+    <dt>Author</dt>
+    <dd>{{ theme.author }}</dd>
+
+    <dt>Installed Version</dt>
+    <dd>{{ theme.installedVersion }}</dd>
+
+    <dt>Available Version</dt>
+    <dd>{{ theme.availableVersion }}</dd>
+
+    <dt>Updated</dt>
+    <dd>{{ theme.updated|date('Y-m-d') }}</dd>
+
+    <dt>Permissions</dt>
+    <dd>
+      <ul>
+        {% for domain, permission in theme.permissions|unserialize %}
+          <li>{{ domain }}: {{ permission }}</li>
+        {% endfor %}
+      </ul>
+    </dd>
+
+    <dt>Number of Sites</dt>
+    <dd>{{ theme.sites|length }}</dd>
+  </dl>
+  <h2><a name="sites">Sites</a></h2>
+  <ul>
+    {% for site in theme.sites %}
+      <li><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.domain ~ site.path }}</a></li>
+    {% endfor %}
+  </ul>
+  <h2><a name="notes">Notes</a></h2>
+  <ul>
+    {% for note in theme.notes %}
+      <li>{{ note.author }} ({{ note.date|date('Y-m-d') }}): {{ note.note }}</li>
+    {% endfor %}
+  </ul>
+  <h2><a name="add-note">Add Note</a></h2>
+  {{ form_start(form) }}
+  {{ form_widget(form) }}
+  {{ form_end(form) }}
+{% endblock %}

@@ -2,10 +2,10 @@
 
 namespace AppBundle\Controller;
 
-use AppBundle\Network;
 use AppBundle\Entity\Plugin;
 use AppBundle\Entity\Site;
 use AppBundle\Entity\Theme;
+use AppBundle\WordPress\Network;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Method;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
@@ -14,10 +14,36 @@ use Symfony\Component\HttpFoundation\Response;
 class RefreshController extends Controller
 {
     /**
+     * @Route("/refresh", name="refresh_all")
+     * @Method("GET")
+     */
+    public function refreshAction()
+    {
+        $results = array();
+
+        if ($this->forward('AppBundle:Refresh:plugins')->isSuccessful()) {
+            $results[] = "WordPress Plugins Refreshed.";
+        }
+
+        if ($this->forward('AppBundle:Refresh:themes')->isSuccessful()) {
+            $results[] = "WordPress Themes Refreshed.";
+        }
+
+        if ($this->forward('AppBundle:Refresh:sites')->isSuccessful()) {
+            $results[] = "WordPress Sites Refreshed.";
+        }
+
+        return $this->render('refresh.html.twig', [
+            'title' => "WordPress Refreshed",
+            'results' => $results,
+        ]);
+    }
+
+    /**
      * @Route("/refresh/sites", name="refresh_sites")
      * @Method("GET")
      */
-    public function refreshSites()
+    public function sitesAction()
     {
         $results = array();
 
@@ -38,7 +64,14 @@ class RefreshController extends Controller
                 $site->setBlogId($wordpress_sites[$uri]['blog_id']);
                 $site->setDomain($wordpress_sites[$uri]['domain']);
                 $site->setPath($wordpress_sites[$uri]['path']);
-                
+                $site->setRegistered($wordpress_sites[$uri]['registered']);
+                $site->setLastUpdated($wordpress_sites[$uri]['last_updated']);
+                $site->setVisibility($wordpress_sites[$uri]['public']);
+                $site->setArchived($wordpress_sites[$uri]['archived']);
+                $site->setMature($wordpress_sites[$uri]['mature']);
+                $site->setSpam($wordpress_sites[$uri]['spam']);
+                $site->setDeactivated($wordpress_sites[$uri]['deleted']);
+
                 $plugins = $site->getPlugins();
                 foreach ($plugins as $plugin) {
                     $file = $plugin->getFile();
@@ -48,14 +81,17 @@ class RefreshController extends Controller
                         $wordpress_sites[$uri]['plugins'] = array_diff($wordpress_sites[$uri]['plugins'], array($file));
                     }
                 }
-                
+
                 foreach ($wordpress_sites[$uri]['plugins'] as $file) {
                     $plugin = $this->getDoctrine()
                         ->getRepository('AppBundle:Plugin')
                         ->findOneBy(array('file' => $file));
-                    $site->addPlugin($plugin);
+
+                    if (!empty($plugin)) {
+                        $site->addPlugin($plugin);
+                    }
                 }
-                
+
                 $theme = $this->getDoctrine()
                     ->getRepository('AppBundle:Theme')
                     ->findOneByName($wordpress_sites[$uri]['theme']);
@@ -80,14 +116,24 @@ class RefreshController extends Controller
             $site->setBlogId($wordpress_site['blog_id']);
             $site->setDomain($wordpress_site['domain']);
             $site->setPath($wordpress_site['path']);
+            $site->setRegistered($wordpress_site['registerd']);
+            $site->setLastUpdated($wordpress_site['last_updated']);
+            $site->setVisibility($wordpress_site['visibility']);
+            $site->setArchived($wordpress_site['archived']);
+            $site->setMature($wordpress_site['mature']);
+            $site->setSpam($wordpress_site['spam']);
+            $site->setDeactivated($wordpress_site['deleted']);
 
             foreach ($wordpress_site['plugins'] as $file) {
                 $plugin = $this->getDoctrine()
                     ->getRepository('AppBundle:Plugin')
                     ->findOneBy(array('file' => $file));
-                $site->addPlugin($plugin);
+
+                if (!empty($plugin)) {
+                    $site->addPlugin($plugin);
+                }
             }
-            
+
             $theme = $this->getDoctrine()
                 ->getRepository('AppBundle:Theme')
                 ->findOneByName($wordpress_site['theme']);
@@ -110,15 +156,15 @@ class RefreshController extends Controller
             'results' => $results,
         ]);
     }
-    
+
     /**
      * @Route("/refresh/themes", name="refresh_themes")
      * @Method("GET")
      */
-    public function refreshThemes()
+    public function themesAction()
     {
         $results = array();
-        
+
         // The themes in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
         $wordpress_themes = $network->getThemes();
@@ -127,73 +173,81 @@ class RefreshController extends Controller
         $themes = $this->getDoctrine()
             ->getRepository('AppBundle:Theme')
             ->findAll();
-            
+
         $em = $this->getDoctrine()->getManager();
-        
+
         foreach ($themes as $theme) {
             $name = $theme->getName();
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
                 $theme->setName($name);
-                
+
                 if (!empty($wordpress_themes[$name]['version'])) {
                     $theme->setInstalledVersion($wordpress_themes[$name]['version']);
                 }
-                
+
                 if (!empty($wordpress_themes[$name]['new_version'])) {
                     $theme->setAvailableVersion($wordpress_themes[$name]['new_version']);
                 }
-                
+
                 if (!empty($wordpress_themes[$name]['updated'])) {
                     $theme->setUpdated($wordpress_themes[$name]['updated']);
                 }
-                
+
                 if (!empty($wordpress_themes[$name]['author'])) {
                     $theme->setAuthor($wordpress_themes[$name]['author']);
                 }
-                
+
+                if (!empty($wordpress_themes[$name]['permissions'])) {
+                    $theme->setPermissions(serialize($wordpress_themes[$name]['permissions']));
+                }
+
                 unset($wordpress_themes[$name]);
-                
+
                 $results[] = 'Updated theme record for ' . $theme->getName();
             } else {
                 $theme->setInstalled(0);
                 $results[] = 'Set theme ' . $theme->getName() . ' to uninstalled.';
             }
-            
+
             // Clear all the sites from this theme. The site refresh process will add them back in.
             foreach ($theme->getSites() as $site) {
                 $theme->removeSite($site);
             }
         }
-        
+
         foreach ($wordpress_themes as $name => $wordpress_theme) {
             $theme = new Theme();
             $theme->setInstalled(1);
             $theme->setName($name);
-            
+
             if (!empty($wordpress_theme['version'])) {
                 $theme->setInstalledVersion($wordpress_theme['version']);
             }
-            
+
             if (!empty($wordpress_theme['new_version'])) {
                 $theme->setAvailableVersion($wordpress_theme['new_version']);
             }
-            
+
             if (!empty($wordpress_theme['updated'])) {
                 $theme->setUpdated($wordpress_theme['updated']);
             }
-            
+
             if (!empty($wordpress_theme['author'])) {
                 $theme->setAuthor($wordpress_theme['author']);
             }
-            
+
+            if (!empty($wordpress_theme['permissions'])) {
+                $theme->setPermissions(serialize($wordpress_theme['permissions']));
+            }
+
             $em->persist($theme);
-            
+
             $results[] = 'Created theme record for ' . $theme->getName();
         }
-        
+
         $em->flush();
-        
+
         return $this->render('refresh.html.twig', [
             'title' => "WordPress Themes Refreshed",
             'results' => $results,
@@ -204,7 +258,7 @@ class RefreshController extends Controller
      * @Route("/refresh/plugins", name="refresh_plugins")
      * @Method("GET")
      */
-    public function refreshPlugins()
+    public function pluginsAction()
     {
         $results = array();
 
@@ -242,6 +296,10 @@ class RefreshController extends Controller
                     $plugin->setUpdated($wordpress_plugins[$file]['updated']);
                 }
 
+                if (!empty($wordpress_plugins[$file]['permissions'])) {
+                    $plugin->setPermissions(serialize($wordpress_plugins[$file]['permissions']));
+                }
+
                 unset($wordpress_plugins[$file]);
 
                 $results[] = 'Updated plugin record for ' . $plugin->getName();
@@ -271,6 +329,10 @@ class RefreshController extends Controller
 
             if (!empty($wordpress_plugin['updated'])) {
                 $plugin->setUpdated($wordpress_plugin['updated']);
+            }
+
+            if (!empty($wordpress_plugin['permissions'])) {
+                $plugin->setPermissions(serialize($wordpress_plugin['permissions']));
             }
 
             $em->persist($plugin);

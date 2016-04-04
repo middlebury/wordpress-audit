@@ -2,13 +2,14 @@
 # Set parameters here that may be different on each deployment target of the app, e.g. development, staging, production.
 # http://symfony.com/doc/current/best_practices/configuration.html#infrastructure-related-configuration
 parameters:
+    # This is the database connection information for the local Symfony
+    # application database, *not* the WordPress database. This will be a new
+    # database you create as part of the process of installing this application.
     database_host:     127.0.0.1
     database_port:     ~
     database_name:     wordpress-audit
     database_user:     root
     database_password: ~
-    # You should uncomment this if you want use pdo_sqlite
-    # database_path: "%kernel.root_dir%/data.db3"
 
     mailer_transport:  smtp
     mailer_host:       127.0.0.1
@@ -16,7 +17,34 @@ parameters:
     mailer_password:   ~
 
     # Edit the list below to include your WordPress database information.
-    # The composer script doesn't seem to like nested parameters, so you'll need to edit parameters.yml after running "composer install" and update the values there.
+    #
+    # The composer script doesn't seem to like nested parameters, so you'll
+    # need to edit parameters.yml after running "composer install" and
+    # update the values there.
+    #
+    # 'install_path' is a fully-qualified local filesystem path to a copy of
+    # your WordPress site(s) code that this application can read. This will
+    # be used to get the list of installed plugins and themes. This should
+    # start and end with a / character.
+    #
+    # 'plugins_path' is a path relative to 'install_path' where your plugin
+    # code is kept. This is 'wp-content/plugins/' by default. This should
+    # end with a / but not start with one.
+    #
+    # 'themes_path' is a path relative to 'install_path' where your theme
+    # code is kept. This is 'wp-content/themes/' by default. This should end
+    # with a / but not start with one.
+    #
+    # 'branches' is an array of remote branch names that will be used to
+    # check for the last time the code of each plugin and theme was updated
+    # in your installation of WordPress. The branches are checked in order.
+    # For example, in the default configuration, we will check the
+    # 'origin/plugins' branch of your project and if there is a plugin or
+    # theme file there with an associated commit, that will be used as the
+    # last updated date of that plugin or theme. If no such file is present,
+    # we will check the 'origin/master' branch and use a date from any
+    # commit we find there. If we still can't find a commit, the last
+    # update field will be blank.
     wordpresses:
       sub.first-domain.com:
         database_host:      127.0.0.1

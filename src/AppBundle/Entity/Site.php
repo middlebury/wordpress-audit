@@ -33,7 +33,42 @@ class Site
     protected $path;
 
     /**
-     * @ORM\OneToOne(targetEntity="Theme")
+     * @ORM\Column(type="date")
+     */
+    protected $registered;
+
+    /**
+     * @ORM\Column(type="date")
+     */
+    protected $last_updated;
+
+    /**
+     * @ORM\Column(type="integer", options={"default":1})
+     */
+    protected $visibility;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $archived;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $mature;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $spam;
+
+    /**
+     * @ORM\Column(type="boolean", options={"default":0})
+     */
+    protected $deactivated;
+
+    /**
+     * @ORM\ManyToOne(targetEntity="Theme")
      * @ORM\JoinColumn(name="theme_id", referencedColumnName="id")
      */
     protected $theme;
@@ -235,5 +270,173 @@ class Site
     public function getPlugins()
     {
         return $this->plugins;
+    }
+
+    /**
+     * Set registered
+     *
+     * @param \DateTime $registered
+     *
+     * @return Site
+     */
+    public function setRegistered($registered)
+    {
+        $this->registered = $registered;
+
+        return $this;
+    }
+
+    /**
+     * Get registered
+     *
+     * @return \DateTime
+     */
+    public function getRegistered()
+    {
+        return $this->registered;
+    }
+
+    /**
+     * Set lastUpdated
+     *
+     * @param \DateTime $lastUpdated
+     *
+     * @return Site
+     */
+    public function setLastUpdated($lastUpdated)
+    {
+        $this->last_updated = $lastUpdated;
+
+        return $this;
+    }
+
+    /**
+     * Get lastUpdated
+     *
+     * @return \DateTime
+     */
+    public function getLastUpdated()
+    {
+        return $this->last_updated;
+    }
+
+    /**
+     * Set visibility
+     *
+     * @param integer $visibility
+     *
+     * @return Site
+     */
+    public function setVisibility($visibility)
+    {
+        $this->visibility = $visibility;
+
+        return $this;
+    }
+
+    /**
+     * Get visibility
+     *
+     * @return integer
+     */
+    public function getVisibility()
+    {
+        return $this->visibility;
+    }
+
+    /**
+     * Set archived
+     *
+     * @param boolean $archived
+     *
+     * @return Site
+     */
+    public function setArchived($archived)
+    {
+        $this->archived = $archived;
+
+        return $this;
+    }
+
+    /**
+     * Get archived
+     *
+     * @return boolean
+     */
+    public function getArchived()
+    {
+        return $this->archived;
+    }
+
+    /**
+     * Set mature
+     *
+     * @param boolean $mature
+     *
+     * @return Site
+     */
+    public function setMature($mature)
+    {
+        $this->mature = $mature;
+
+        return $this;
+    }
+
+    /**
+     * Get mature
+     *
+     * @return boolean
+     */
+    public function getMature()
+    {
+        return $this->mature;
+    }
+
+    /**
+     * Set spam
+     *
+     * @param boolean $spam
+     *
+     * @return Site
+     */
+    public function setSpam($spam)
+    {
+        $this->spam = $spam;
+
+        return $this;
+    }
+
+    /**
+     * Get spam
+     *
+     * @return boolean
+     */
+    public function getSpam()
+    {
+        return $this->spam;
+    }
+
+    /**
+     * Set deactivated
+     *
+     * @param boolean $deactivated
+     *
+     * @return Site
+     */
+    public function setDeactivated($deactivated)
+    {
+        $this->deactivated = $deactivated;
+
+        return $this;
+    }
+
+    /**
+     * Get deactivated
+     *
+     * @return boolean
+     */
+    public function getDeactivated()
+    {
+        return $this->deactivated;
     }
 }

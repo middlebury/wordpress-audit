@@ -1,0 +1,67 @@
+{% extends 'midd.html.twig' %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; <a href="{{ path('list_sites') }}">Sites</a> &raquo; {{ title }}
+{% endblock %}
+
+{% block content %}
+  <p><a href="#sites">Plugins</a> | <a href="#notes">Notes</a> | <a href="#add-note">Add Note</a></p>
+  <dl>
+    <dt>Blog ID</dt>
+    <dd>{{ site.blogId }}</dd>
+
+    <dt>Domain</dt>
+    <dd>{{ site.domain }}</dd>
+
+    <dt>Path</dt>
+    <dd>{{ site.path }}</dd>
+
+    <dt>Registered</dt>
+    <dd>{{ site.registered|date('Y-m-d') }}</dd>
+
+    <dt>Last Updated</dt>
+    <dd>{{ site.lastUpdated|date('Y-m-d') }}</dd>
+
+    {% set visibilities = {'2': 'IP Restricted', '1':'Visible', '0':'No Search', '-1':'Network Users Only', '-2':'Site Members Only', '-3':'Site Admins Only'} %}
+    <dt>Visibility</dt>
+    <dd>{{ visibilities[site.visibility] }}</dd>
+
+    <dt>Archived</dt>
+    <dd>{{ site.archived ? 'Yes' : 'No' }}</dd>
+
+    <dt>Mature</dt>
+    <dd>{{ site.mature ? 'Yes' : 'No' }}</dd>
+
+    <dt>Spam</dt>
+    <dd>{{ site.spam ? 'Yes' : 'No' }}</dd>
+
+    <dt>Deactivated</dt>
+    <dd>{{ site.deactivated ? 'Yes' : 'No' }}</dd>
+
+    <dt>Theme</dt>
+    <dd>
+      {% if site.theme.name is defined %}
+        <a href="{{ path('show_theme', {'themeName': site.theme.name }) }}">{{ site.theme.name }}</a>
+      {% endif %}
+    </dd>
+
+    <dt>Number of Plugins</dt>
+    <dd>{{ site.plugins|length }}</dd>
+  </dl>
+  <h2><a name="sites">Plugins</a></h2>
+  <ul>
+    {% for plugin in site.plugins %}
+      <li><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></li>
+    {% endfor %}
+  </ul>
+  <h2><a name="notes">Notes</a></h2>
+  <ul>
+    {% for note in site.notes %}
+      <li>{{ note.author }} ({{ note.date|date('Y-m-d') }}): {{ note.note }}</li>
+    {% endfor %}
+  </ul>
+  <h2><a name="add-note">Add Note</a></h2>
+  {{ form_start(form) }}
+  {{ form_widget(form) }}
+  {{ form_end(form) }}
+{% endblock %}

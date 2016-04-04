@@ -1,0 +1,85 @@
+{% extends 'midd.html.twig' %}
+
+{% block stylesheets %}
+  {{ parent() }}
+  <link rel="stylesheet" href="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/css/jquery.dataTables.css') }}">
+{% endblock %}
+
+{% block breadcrumb %}
+  <a href="/">Home</a> &raquo; {{ title }}
+{% endblock %}
+
+{% block content %}
+  {% set columns = {
+    0: "Blog ID",
+    1: "Domain",
+    2: "Path",
+    3: "Registered",
+    4: "Last Updated",
+    5: "Visibility",
+    6: "Archived",
+    7: "Mature",
+    8: "Spam",
+    9: "Deactivated",
+    10: "Theme",
+    11: "Number of Plugins",
+  } %}
+  <p>Show/Hide:
+    {% for index, name in columns %}
+      <a class="toggle-vis" data-column="{{ index }}">{{ name }}</a>{% if not loop.last %}&nbsp;|&nbsp;{% endif %}
+    {% endfor %}
+  </p>
+  <table id="wordpress-audit-sites">
+    <thead>
+      <tr>
+        {% for name in columns %}
+          <th>{{ name }}</th>
+        {% endfor %}
+      </tr>
+    </thead>
+    <tbody>
+      {% set visibilities = {'2': 'IP Restricted', '1':'Visible', '0':'No Search', '-1':'Network Users Only', '-2':'Site Members Only', '-3':'Site Admins Only'} %}
+      {% for site in sites %}
+        <tr>
+          <td><a href="{{ path('show_site', {'siteId': site.id }) }}">{{ site.blogId }}</a></td>
+          <td>{{ site.domain }}</td>
+          <td>{{ site.path }}</td>
+          <td>{{ site.registered|date('Y-m-d') }}
+          <td>{{ site.lastUpdated|date('Y-m-d') }}
+          <td>{{ visibilities[site.visibility] }}</td>
+          <td>{{ site.archived ? 'Yes' : 'No' }}</td>
+          <td>{{ site.mature ? 'Yes' : 'No' }}</td>
+          <td>{{ site.spam ? 'Yes' : 'No' }}</td>
+          <td>{{ site.deactivated ? 'Yes' : 'No' }}</td>
+          <td>
+            {% if site.theme.name is defined %}
+              <a href="{{ path('show_theme', {'themeName': site.theme.name }) }}">{{ site.theme.name }}</a>
+            {% endif %}
+          </td>
+          <td>{{ site.plugins|length }}</td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+{% endblock %}
+
+{% block javascripts %}
+  {{ parent() }}
+  <script src="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/js/jquery.dataTables.js') }}"></script>
+  <script>
+    $(document).ready(function() {
+      var table = $('#wordpress-audit-sites').DataTable({
+        paginate: false,
+        scrollX: true,
+      });
+
+      $('a.toggle-vis').on('click', function(e) {
+        e.preventDefault();
+
+        var column = table.column($(this).attr('data-column'));
+
+        column.visible(!column.visible());
+      });
+    });
+  </script>
+{% endblock %}
