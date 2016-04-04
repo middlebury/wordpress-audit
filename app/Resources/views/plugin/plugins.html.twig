@@ -10,15 +10,25 @@
 {% endblock %}
 
 {% block content %}
+  {% set columns = {
+    0: "Name",
+    1: "Installed",
+    2: "Installed Version",
+    3: "Available Version",
+    4: "Updated",
+    5: "Number of Sites",
+  } %}
+  <p>Show/Hide:
+    {% for index, name in columns %}
+      <a class="toggle-vis" data-column="{{ index }}">{{ name }}</a>{% if not loop.last %}&nbsp;|&nbsp;{% endif %}
+    {% endfor %}
+  </p>
   <table id="wordpress-audit-plugins">
     <thead>
       <tr>
-        <th>Name</th>
-        <th>Installed</th>
-        <th>Installed Version</th>
-        <th>Available Version</th>
-        <th>Updated</th>
-        <th>Number of Sites</th>
+        {% for name in columns %}
+          <th>{{ name }}</th>
+        {% endfor %}
       </tr>
     </thead>
     <tbody>
@@ -41,8 +51,17 @@
   <script src="{{ asset('//cdn.middlebury.edu/common/DataTables-1.10.7/media/js/jquery.dataTables.js') }}"></script>
   <script>
     $(document).ready(function() {
-      $('#wordpress-audit-plugins').DataTable({
+      var table = $('#wordpress-audit-plugins').DataTable({
         paginate: false,
+        scrollX: true,
+      });
+
+      $('a.toggle-vis').on('click', function(e) {
+        e.preventDefault();
+
+        var column = table.column($(this).attr('data-column'));
+
+        column.visible(!column.visible());
       });
     });
   </script>

@@ -320,8 +320,17 @@ class WordPress
      * array(
      *     "sub.domain.tld/site_path" => array(
      *         'blog_id' => "12345",
+     *         'site_id' => 1,
      *         'domain' => "sub.domain.tld",
      *         'path' => "/site_path",
+     *         'registered' => new DateTime('Jan 1, 2016 00:01:01'),
+     *         'last_updated' => new DateTime('Jan 1, 2016 00:01:01'),
+     *         'public' => 1,
+     *         'archived' => 0,
+     *         'mature' => 0,
+     *         'spam' => 0,
+     *         'deleted' => 0,
+     *         'lang_id' => 1,
      *         'plugins' => array(
      *             "plugin1_directory/plugin1_file.php",
      *             "plugin2_directory/plugin2_file.php",
@@ -330,6 +339,25 @@ class WordPress
      *     ),
      * );
      * </code>
+     *
+     * The 'deleted' column that is returned actually corresonds to the
+     * 'Activated' or 'Deactivated' state in the Network Admin interface. If you
+     * 'Delete' a site in that interface, the tables are dropped.
+     *
+     * The 'public' column will have additional values if the More Privacy
+     * Options plugin is installed on the site. These are:
+     *
+     *       2 => IP Restricted*
+     *       1 => Visible
+     *       0 => No Search
+     *      -1 => Network Users Only
+     *      -2 => Site Members Only
+     *      -3 => Site Admins Only
+     *
+     * * The 'IP Restricted' option is provided by the Restricted Site Access
+     * plugin.
+     *
+     * This application currently ignores the 'site_id' and 'lang_id' columns.
      *
      * @return array Metadata about this WordPress install's sites.
      *
@@ -343,7 +371,7 @@ class WordPress
         $connection = $this->getConnection();
 
         $statement = $connection->prepare(
-            "SELECT blog_id, domain, path
+            "SELECT *
              FROM wp_blogs"
         );
         $statement->execute();
@@ -355,6 +383,14 @@ class WordPress
 
             // Gets the name of the currently active theme.
             $row['theme'] = $this->getSiteTheme($row['blog_id']);
+
+            if (!empty($row['registered'])) {
+                $row['registered'] = new \DateTime($row['registered']);
+            }
+
+            if (!empty($row['last_updated'])) {
+                $row['last_updated'] = new \DateTime($row['last_updated']);
+            }
 
             $sites[$row['domain'] . $row['path']] = $row;
         }

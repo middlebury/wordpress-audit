@@ -16,6 +16,28 @@
     <dt>Path</dt>
     <dd>{{ site.path }}</dd>
 
+    <dt>Registered</dt>
+    <dd>{{ site.registered|date('Y-m-d') }}</dd>
+
+    <dt>Last Updated</dt>
+    <dd>{{ site.lastUpdated|date('Y-m-d') }}</dd>
+
+    {% set visibilities = {'2': 'IP Restricted', '1':'Visible', '0':'No Search', '-1':'Network Users Only', '-2':'Site Members Only', '-3':'Site Admins Only'} %}
+    <dt>Visibility</dt>
+    <dd>{{ visibilities[site.visibility] }}</dd>
+
+    <dt>Archived</dt>
+    <dd>{{ site.archived ? 'Yes' : 'No' }}</dd>
+
+    <dt>Mature</dt>
+    <dd>{{ site.mature ? 'Yes' : 'No' }}</dd>
+
+    <dt>Spam</dt>
+    <dd>{{ site.spam ? 'Yes' : 'No' }}</dd>
+
+    <dt>Deactivated</dt>
+    <dd>{{ site.deactivated ? 'Yes' : 'No' }}</dd>
+
     <dt>Theme</dt>
     <dd>
       {% if site.theme.name is defined %}

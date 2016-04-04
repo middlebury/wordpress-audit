@@ -64,6 +64,13 @@ class RefreshController extends Controller
                 $site->setBlogId($wordpress_sites[$uri]['blog_id']);
                 $site->setDomain($wordpress_sites[$uri]['domain']);
                 $site->setPath($wordpress_sites[$uri]['path']);
+                $site->setRegistered($wordpress_sites[$uri]['registered']);
+                $site->setLastUpdated($wordpress_sites[$uri]['last_updated']);
+                $site->setVisibility($wordpress_sites[$uri]['public']);
+                $site->setArchived($wordpress_sites[$uri]['archived']);
+                $site->setMature($wordpress_sites[$uri]['mature']);
+                $site->setSpam($wordpress_sites[$uri]['spam']);
+                $site->setDeactivated($wordpress_sites[$uri]['deleted']);
 
                 $plugins = $site->getPlugins();
                 foreach ($plugins as $plugin) {
@@ -109,6 +116,13 @@ class RefreshController extends Controller
             $site->setBlogId($wordpress_site['blog_id']);
             $site->setDomain($wordpress_site['domain']);
             $site->setPath($wordpress_site['path']);
+            $site->setRegistered($wordpress_site['registerd']);
+            $site->setLastUpdated($wordpress_site['last_updated']);
+            $site->setVisibility($wordpress_site['visibility']);
+            $site->setArchived($wordpress_site['archived']);
+            $site->setMature($wordpress_site['mature']);
+            $site->setSpam($wordpress_site['spam']);
+            $site->setDeactivated($wordpress_site['deleted']);
 
             foreach ($wordpress_site['plugins'] as $file) {
                 $plugin = $this->getDoctrine()
