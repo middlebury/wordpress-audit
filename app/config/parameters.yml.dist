@@ -66,5 +66,5 @@ parameters:
           - 'origin/plugins'
           - 'origin/master'
 
-     # A secret key that's used to generate certain security-related tokens
-     -    secret:            ThisTokenIsNotSoSecretChangeIt
+    # A secret key that's used to generate certain security-related tokens
+    secret:            ThisTokenIsNotSoSecretChangeIt
