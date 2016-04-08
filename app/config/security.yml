@@ -22,7 +22,9 @@ security:
 
         main:
             anonymous: ~
-            http_basic: ~
+            form_login:
+              login_path: login
+              check_path: login
             # activate different ways to authenticate
 
             # http_basic: ~
@@ -33,4 +35,5 @@ security:
 
     access_control:
         - { path: ^/refresh, roles: IS_AUTHENTICATED_ANONYMOUSLY }
+        - { path: ^/login, roles: IS_AUTHENTICATED_ANONYMOUSLY }
         - { path: ^/, roles: ROLE_ADMIN }
