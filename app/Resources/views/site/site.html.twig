@@ -1,7 +1,7 @@
 {% extends 'midd.html.twig' %}
 
 {% block breadcrumb %}
-  <a href="/">Home</a> &raquo; <a href="{{ path('list_sites') }}">Sites</a> &raquo; {{ title }}
+  <a href="{{ path('homepage') }}">Home</a> &raquo; <a href="{{ path('list_sites') }}">Sites</a> &raquo; {{ title }}
 {% endblock %}
 
 {% block content %}
