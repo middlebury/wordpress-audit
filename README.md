@@ -72,14 +72,18 @@ arrays. You can skip over that for now.
 
     php bin/console doctrine:schema:update --force
 
-8. If you have not placed this in a web server directory, go to the application
+8. If you are in a 'production' environment, warm up the ORM proxies.
+
+    php bin/console cache:warmup --env=prod --no-debug
+
+9. If you have not placed this in a web server directory, go to the application
 directory in your terminal and start Symfony's local web server.
 
     php bin/console server:run
 
-9. Browse to the `/refresh` route to fetch an initial import of data.
+10. Browse to the `/refresh` route to fetch an initial import of data.
 
-10. Browse to `/` to view the options.
+11. Browse to `/` to view the options.
 
 Copyright and License
 =====================
