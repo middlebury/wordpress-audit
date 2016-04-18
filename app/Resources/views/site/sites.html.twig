@@ -23,6 +23,7 @@
     9: "Deactivated",
     10: "Theme",
     11: "Number of Plugins",
+    12: "Notes",
   } %}
   <p>Show/Hide:
     {% for index, name in columns %}
@@ -57,6 +58,7 @@
             {% endif %}
           </td>
           <td>{{ site.plugins|length }}</td>
+          <td>{{ site.notes|length }}</td>
         </tr>
       {% endfor %}
     </tbody>

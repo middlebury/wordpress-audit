@@ -16,7 +16,8 @@
     2: "Installed Version",
     3: "Available Version",
     4: "Updated",
-    5: "Number of Sites",
+    5: "Notes",
+    6: "Number of Sites",
   } %}
   <p>Show/Hide:
     {% for index, name in columns %}
@@ -39,6 +40,7 @@
           <td>{{ theme.installedVersion }}</td>
           <td>{{ theme.availableVersion }}</td>
           <td>{{ theme.updated|date('Y-m-d') }}</td>
+          <td>{{ theme.notes|length }}</td>
           <td>{{ theme.sites|length }}</td>
         </tr>
       {% endfor %}
