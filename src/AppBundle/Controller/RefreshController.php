@@ -118,7 +118,7 @@ class RefreshController extends Controller
             $site->setPath($wordpress_site['path']);
             $site->setRegistered($wordpress_site['registerd']);
             $site->setLastUpdated($wordpress_site['last_updated']);
-            $site->setVisibility($wordpress_site['visibility']);
+            $site->setVisibility($wordpress_site['public']);
             $site->setArchived($wordpress_site['archived']);
             $site->setMature($wordpress_site['mature']);
             $site->setSpam($wordpress_site['spam']);
