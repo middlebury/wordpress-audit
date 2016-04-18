@@ -24,6 +24,7 @@
       <a class="toggle-vis" data-column="{{ index }}">{{ name }}</a>{% if not loop.last %}&nbsp;|&nbsp;{% endif %}
     {% endfor %}
   </p>
+  <p><strong>*</strong>: Indicates that the plugin is Network Activated on at least one installation.</p>
   <table id="wordpress-audit-plugins">
     <thead>
       <tr>
@@ -34,6 +35,12 @@
     </thead>
     <tbody>
       {% for plugin in plugins %}
+        {% set net_activated = false %}
+        {% for domain, permission in plugin.permissions|unserialize %}
+          {% if permission == 'Network Activate' %}
+            {% set net_activated = true %}
+          {% endif %}
+        {% endfor %}
         <tr>
           <td><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></td>
           <td>{{ plugin.installed == 1 ? 'Yes' : 'No' }}</td>
@@ -41,7 +48,7 @@
           <td>{{ plugin.availableVersion }}</td>
           <td>{{ plugin.updated|date('Y-m-d') }}</td>
           <td>{{ plugin.notes|length }}</td>
-          <td>{{ plugin.sites|length }}</td>
+          <td>{% if net_activated %}*{% endif %}{{ plugin.sites|length }}</td>
         </tr>
       {% endfor %}
     </tbody>
