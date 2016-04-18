@@ -22,9 +22,24 @@ class PluginsController extends Controller
             ->getRepository('AppBundle:Plugin')
             ->findAll();
 
+        $em = $this->getDoctrine()->getManager();
+        $query = $em->createQuery(
+            'SELECT s.domain AS domain, count(s) AS sites
+            FROM AppBundle:Site s
+            GROUP BY s.domain'
+        );
+
+        $result = $query->getResult();
+        $domains = array();
+
+        foreach ($result as $row) {
+            $domains[$row['domain']] = $row['sites'];
+        }
+
         return $this->render('plugin/plugins.html.twig', [
             'title' => "WordPress Plugins",
             'plugins' => $plugins,
+            'domains' => $domains,
         ]);
     }
 
