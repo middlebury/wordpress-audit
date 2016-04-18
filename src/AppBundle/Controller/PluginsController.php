@@ -31,9 +31,24 @@ class PluginsController extends Controller
 
         $result = $query->getResult();
         $domains = array();
-
         foreach ($result as $row) {
             $domains[$row['domain']] = $row['sites'];
+        }
+
+        foreach ($plugins as &$plugin) {
+            $sites = $plugin->getSites();
+            $plugin->num_sites = count($sites);
+            $permissions = unserialize($plugin->getPermissions());
+            foreach ($permissions as $domain => $permission) {
+                if ($permission == 'Network Activate') {
+                    $plugin->num_sites += $domains[$domain];
+                    foreach ($sites as $site) {
+                        if ($site->getDomain() == $domain) {
+                            $plugin->num_sites--;
+                        }
+                    }
+                }
+            }
         }
 
         return $this->render('plugin/plugins.html.twig', [

@@ -34,12 +34,6 @@
     </thead>
     <tbody>
       {% for plugin in plugins %}
-        {% set num_sites = plugin.sites|length %}
-        {% for domain, permission in plugin.permissions|unserialize %}
-          {% if permission == 'Network Activate' %}
-            {% set num_sites = num_sites + domains[domain] %}
-          {% endif %}
-        {% endfor %}
         <tr>
           <td><a href="{{ path('show_plugin', {'pluginName': plugin.name }) }}">{{ plugin.name }}</a></td>
           <td>{{ plugin.installed == 1 ? 'Yes' : 'No' }}</td>
@@ -47,7 +41,7 @@
           <td>{{ plugin.availableVersion }}</td>
           <td>{{ plugin.updated|date('Y-m-d') }}</td>
           <td>{{ plugin.notes|length }}</td>
-          <td>{{ num_sites }}</td>
+          <td>{{ plugin.num_sites }}</td>
         </tr>
       {% endfor %}
     </tbody>
