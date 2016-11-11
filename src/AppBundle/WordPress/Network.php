@@ -6,8 +6,6 @@ use AppBundle\WordPress\WordPress;
 
 /**
  * Defines a network of WordPress installations.
- *
- * @author Ian McBride <imcbride@middlebury.edu>
  */
 class Network
 {

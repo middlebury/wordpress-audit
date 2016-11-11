@@ -12,6 +12,11 @@ use Symfony\Component\Form\Extension\Core\Type\DateType;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
 use Symfony\Component\OptionsResolver\OptionsResolver;
 
+/**
+ * Builds and handles a form that allows users to add notes to items.
+ *
+ * Copied and lightly modified from http://symfony.com/doc/current/forms.html.
+ */
 class NoteType extends AbstractType
 {
     public function buildForm(FormBuilderInterface $builder, array $options)

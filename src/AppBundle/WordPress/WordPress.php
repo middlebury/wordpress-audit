@@ -9,8 +9,6 @@ use \PDO;
 /**
  * Defines a WordPress installation and retrieves information about the plugins,
  * themes, and sites on that installation.
- *
- * @author Ian McBride <imcbride@middlebury.edu>
  */
 class WordPress
 {

@@ -10,6 +10,9 @@ use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Controller to get information about plugins on the WordPress network.
+ */
 class PluginsController extends Controller
 {
     /**
@@ -18,10 +21,12 @@ class PluginsController extends Controller
      */
     public function listAction()
     {
+        // Get all the plugin data.
         $plugins = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')
             ->findAll();
 
+        // Get a count of the number of sites on each domain in the network.
         $em = $this->getDoctrine()->getManager();
         $query = $em->createQuery(
             'SELECT s.domain AS domain, count(s) AS sites
@@ -29,6 +34,7 @@ class PluginsController extends Controller
             GROUP BY s.domain'
         );
 
+        // Store the count of the number of sites on each domain in the network.
         $result = $query->getResult();
         $domains = array();
         foreach ($result as $row) {
@@ -37,11 +43,23 @@ class PluginsController extends Controller
 
         foreach ($plugins as &$plugin) {
             $sites = $plugin->getSites();
-            $plugin->num_sites = count($sites);
             $permissions = unserialize($plugin->getPermissions());
+
+            // Store the number of sites where the plugin is manually activated.
+            $plugin->num_sites = count($sites);
+
+            // If the plugin is activated on the entire network, we need to
+            // account for the total number of sites in the network.
             foreach ($permissions as $domain => $permission) {
                 if ($permission == 'Network Activate') {
+                    // Add the number of sites on the domain where the plugin
+                    // is network activated to the number of sites where it is
+                    // manually activated.
                     $plugin->num_sites += $domains[$domain];
+
+                    // Run through any sites on the domain where it is network
+                    // activated and subtract any that were added to the count
+                    // twice because they'd also been manually activated.
                     foreach ($sites as $site) {
                         if ($site->getDomain() == $domain) {
                             $plugin->num_sites--;
@@ -63,14 +81,17 @@ class PluginsController extends Controller
      */
     public function showPlugin($pluginName, Request $request)
     {
+        // Get data for a single plugin based on the name.
         $plugin = $this->getDoctrine()
             ->getRepository('AppBundle:Plugin')
             ->findOneByName($pluginName);
 
+        // Generate a new note object for the empty note form.
         $note = new Note();
 
         $form = $this->createForm(NoteType::class, $note);
 
+        // Check to see if we have a postback with a new note.
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -81,7 +102,11 @@ class PluginsController extends Controller
             $em->persist($note);
             $em->flush();
 
-            return $this->redirectToRoute('show_plugin', array('pluginName' => $pluginName));
+            // After saving the new note, return to the plugin page but without
+            // any postback data to avoid triggering the note submission again.
+            return $this->redirectToRoute('show_plugin',
+                array('pluginName' => $pluginName)
+            );
         }
 
         return $this->render('plugin/plugin.html.twig', [

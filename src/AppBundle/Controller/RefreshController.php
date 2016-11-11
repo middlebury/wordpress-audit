@@ -11,6 +11,9 @@ use Sensio\Bundle\FrameworkExtraBundle\Configuration\Route;
 use Symfony\Bundle\FrameworkBundle\Controller\Controller;
 use Symfony\Component\HttpFoundation\Response;
 
+/**
+ * Controller to handle getting plugin, theme, and site data from WordPress.
+ */
 class RefreshController extends Controller
 {
     /**
@@ -19,6 +22,9 @@ class RefreshController extends Controller
      */
     public function refreshAction()
     {
+        // These are refreshed in a particular order to ensure we collect as
+        // much information as possible. This route is intended for use in a
+        // cron task.
         $results = array();
 
         if ($this->forward('AppBundle:Refresh:plugins')->isSuccessful()) {
@@ -58,8 +64,12 @@ class RefreshController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
+        // Update all the sites for which we already have data in the local
+        // database with the current information from the WordPress network.
         foreach ($sites as $site) {
+            // Match sites on their URI.
             $uri = $site->getDomain() . $site->getPath();
+
             if (in_array($uri, array_keys($wordpress_sites))) {
                 $site->setBlogId($wordpress_sites[$uri]['blog_id']);
                 $site->setDomain($wordpress_sites[$uri]['domain']);
@@ -102,6 +112,8 @@ class RefreshController extends Controller
                     $em->persist($theme);
                 }
 
+                // Remove this from the list of site data returned from the
+                // network so that it doesn't get added again in the next loop.
                 unset($wordpress_sites[$uri]);
 
                 $results[] = 'Updated site record for ' . $uri;
@@ -111,6 +123,7 @@ class RefreshController extends Controller
             }
         }
 
+        // Add any new sites on the network to the local database.
         foreach ($wordpress_sites as $uri => $wordpress_site) {
             $site = new Site();
             $site->setBlogId($wordpress_site['blog_id']);
@@ -176,8 +189,12 @@ class RefreshController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
+        // Update all the themes for which we already have data in the local
+        // database with the current information from the WordPress network.
         foreach ($themes as $theme) {
+            // Match themes on their name.
             $name = $theme->getName();
+
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
                 $theme->setName($name);
@@ -202,6 +219,8 @@ class RefreshController extends Controller
                     $theme->setPermissions(serialize($wordpress_themes[$name]['permissions']));
                 }
 
+                // Remove this from the list of site data returned from the
+                // network so that it doesn't get added again in the next loop.
                 unset($wordpress_themes[$name]);
 
                 $results[] = 'Updated theme record for ' . $theme->getName();
@@ -216,6 +235,7 @@ class RefreshController extends Controller
             }
         }
 
+        // Add any new themes on the network to the local database.
         foreach ($wordpress_themes as $name => $wordpress_theme) {
             $theme = new Theme();
             $theme->setInstalled(1);
@@ -273,8 +293,12 @@ class RefreshController extends Controller
 
         $em = $this->getDoctrine()->getManager();
 
+        // Update all the plugins for which we already have data in the local
+        // database with the current information from the WordPress network.
         foreach ($plugins as $plugin) {
+            // Match themes on their filename.
             $file = $plugin->getFile();
+
             if (in_array($file, array_keys($wordpress_plugins))) {
                 $plugin->setInstalled(1);
                 $plugin->setFile($file);
@@ -300,6 +324,8 @@ class RefreshController extends Controller
                     $plugin->setPermissions(serialize($wordpress_plugins[$file]['permissions']));
                 }
 
+                // Remove this from the list of site data returned from the
+                // network so that it doesn't get added again in the next loop.
                 unset($wordpress_plugins[$file]);
 
                 $results[] = 'Updated plugin record for ' . $plugin->getName();
@@ -309,6 +335,7 @@ class RefreshController extends Controller
             }
         }
 
+        // Add any new plugins on the network to the local database.
         foreach ($wordpress_plugins as $file => $wordpress_plugin) {
             $plugin = new Plugin();
             $plugin->setInstalled(1);

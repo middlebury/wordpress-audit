@@ -18,6 +18,7 @@ class SitesController extends Controller
      */
     public function listAction()
     {
+        // Get all the plugin data.
         $sites = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
             ->findAll();
@@ -33,14 +34,17 @@ class SitesController extends Controller
      */
     public function showAction($siteId, Request $request)
     {
+        // Get data for a single plugin based on the internal id.
         $site = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
             ->find($siteId);
 
+        // Generate a new note object for the empty note form.
         $note = new Note();
 
         $form = $this->createForm(NoteType::class, $note);
 
+        // Check to see if we have a postback with a new note.
         $form->handleRequest($request);
 
         if ($form->isSubmitted() && $form->isValid()) {
@@ -51,6 +55,8 @@ class SitesController extends Controller
             $em->persist($note);
             $em->flush();
 
+            // After saving the new note, return to the plugin page but without
+            // any postback data to avoid triggering the note submission again.
             return $this->redirectToRoute('show_site', array('siteId' => $siteId));
         }
 
