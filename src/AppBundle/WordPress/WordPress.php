@@ -686,7 +686,7 @@ class WordPress
         $statement = $connection->prepare(
             "SELECT option_value
              FROM wp_" . $site_id . "_options
-             WHERE option_name='current_theme'"
+             WHERE option_name='template'"
         );
         $statement->execute();
         $row = $statement->fetch();
