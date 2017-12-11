@@ -662,10 +662,10 @@ class WordPress
      * so we need to loop through all of them to get the list of active themes
      * on each. This is a helper function to do that.
      *
-     * Note: the WordPress wp_ID_options table has a option_name 'active_theme'
+     * Note: the WordPress wp_ID_options table has a option_name 'current_theme'
      * which stores the human-readable name of the active theme. Here we want
-     * the name of the theme's directory instead, so we look for the 'template'
-     * option_name.
+     * the name of the theme's stylesheet instead, which indicates the name of the
+     * theme itself, whereas template refers to the parent theme name.
      *
      * @param int $site_id The blog_id of the site in this WordPress install.
      *
