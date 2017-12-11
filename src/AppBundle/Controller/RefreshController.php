@@ -117,6 +117,7 @@ class RefreshController extends Controller
                 unset($wordpress_sites[$uri]);
 
                 $results[] = 'Updated site record for ' . $uri;
+                $results[] = 'Theme name: ' . $theme->getName();
             } else {
                 // Do something about sites no longer existing.
                 // Only if we decide to keep notes on sites.
