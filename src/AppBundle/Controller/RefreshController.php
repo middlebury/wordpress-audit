@@ -171,7 +171,6 @@ class RefreshController extends Controller
             $theme = $this->getDoctrine()
                 ->getRepository('AppBundle:Theme')
                 ->findOneByName($wordpress_site['theme']);
-            $themeResults = "";
             if (!empty($theme)) {
                 $site->setTheme($theme);
                 $theme->addSite($site);
