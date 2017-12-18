@@ -51,7 +51,7 @@ class RefreshController extends Controller
      */
     public function sitesAction()
     {
-        $results = array("Test");
+        $results = array();
 
         // The sites in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
@@ -105,9 +105,11 @@ class RefreshController extends Controller
                 $theme = $this->getDoctrine()
                     ->getRepository('AppBundle:Theme')
                     ->findOneByName($wordpress_sites[$uri]['theme']);
+                $themeResult = ", and no theme was found.";
                 if (!empty($theme)) {
                     $site->setTheme($theme);
                     $theme->addSite($site);
+                    $themeResult = ", and theme found: " . $theme->getName();
 
                     $em->persist($theme);
                 }
@@ -116,7 +118,7 @@ class RefreshController extends Controller
                 // network so that it doesn't get added again in the next loop.
                 unset($wordpress_sites[$uri]);
 
-                $results[] = 'Updated site record for ' . $uri;
+                $results[] = 'Updated site record for ' . $uri . $themeResult;
             } else {
                 // Do something about sites no longer existing.
                 // Only if we decide to keep notes on sites.
