@@ -175,6 +175,7 @@ class WordPress
      */
     public function getPlugins()
     {
+        alert('howdy');
         // Will store the data returned by this function
         $plugins =
         // Lists the plugins extant in $this->install_path . $this->plugins_path
@@ -190,6 +191,8 @@ class WordPress
             array();
 
         $connection = $this->getConnection();
+
+        alert('connection successful');
 
         $finder = new Finder();
         $finder->files()
