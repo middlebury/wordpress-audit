@@ -45,6 +45,13 @@ class RefreshController extends Controller
         ]);
     }
 
+    public function displayResults($results) {
+      return $this->render('refresh.html.twig', [
+          'title' => "WordPress Sites Refreshed",
+          'results' => $results,
+      ]);
+    }
+
     /**
      * @Route("/refresh/sites", name="refresh_sites")
      * @Method("GET")
@@ -164,10 +171,7 @@ class RefreshController extends Controller
 
         $em->flush();
 
-        return $this->render('refresh.html.twig', [
-            'title' => "WordPress Sites Refreshed",
-            'results' => $results,
-        ]);
+        this->displayResults($results);
     }
 
     /**
