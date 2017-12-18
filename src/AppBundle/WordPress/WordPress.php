@@ -135,10 +135,10 @@ class WordPress
     private function getConnection()
     {
         return new PDO(
-            //"mysql:host=$this->database_host;dbname=$this->database_name",
-            "mysql:host=localhost;dbname=wordpress-audit",
+            "mysql:host=$this->database_host;dbname=$this->database_name",
             $this->database_user,
-            $this->database_password
+            //$this->database_password
+            "GRJSDG"
         );
     }
 
