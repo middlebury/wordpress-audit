@@ -174,16 +174,13 @@ class RefreshController extends Controller
             if (!empty($theme)) {
                 $site->setTheme($theme);
                 $theme->addSite($site);
-                $themeResults = ", and theme is: " . $theme->getName();
 
                 $em->persist($theme);
-            } else {
-              $themeResults = ", and no theme found.";
             }
 
             $em->persist($site);
 
-            $results[] = 'Created site record for ' . $uri . $themeResults;
+            $results[] = 'Created site record for ' . $uri;
         }
 
         $em->flush();
@@ -218,7 +215,7 @@ class RefreshController extends Controller
 
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
-                //$theme->setName($name);
+                $theme->setName($name);
 
                 if (!empty($wordpress_themes[$name]['version'])) {
                     $theme->setInstalledVersion($wordpress_themes[$name]['version']);
