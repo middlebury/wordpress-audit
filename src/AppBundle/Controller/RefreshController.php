@@ -58,9 +58,7 @@ class RefreshController extends Controller
      */
     public function sitesAction()
     {
-        $results = array();
-
-        asdf
+        $results = array("Test");
 
         // The sites in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
@@ -187,7 +185,7 @@ class RefreshController extends Controller
 
         $em->flush();
 
-        return $this->displayResults(["Test"]);
+        return $this->displayResults($results);
     }
 
     /**
