@@ -109,7 +109,7 @@ class RefreshController extends Controller
                 if (!empty($theme)) {
                     $site->setTheme($theme);
                     $theme->addSite($site);
-                    $themeResult = ", and theme found: " . $theme->getName();
+                    //$themeResult = ", and theme found: " . $theme->getName();
 
                     $em->persist($theme);
                 }
