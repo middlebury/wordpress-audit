@@ -185,7 +185,7 @@ class RefreshController extends Controller
 
         $em->flush();
 
-        return $this->displayResults("Test");
+        return $this->displayResults(["Test"]);
     }
 
     /**
