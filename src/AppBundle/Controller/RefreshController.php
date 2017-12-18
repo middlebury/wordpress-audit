@@ -64,10 +64,20 @@ class RefreshController extends Controller
         $network = new Network($this->getParameter('wordpresses'));
         $wordpress_sites = $network->getSites();
 
+        // Check for no sites loaded.
+        if (sizeof($wordpress_sites) == 0) {
+          return $this->displayResults("No sites found remotely.  Check database connection");
+        }
+
         // The sites in our local application database.
         $sites = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
             ->findAll();
+
+        // Check for no sites loaded.
+        if (sizeof($sites) == 0) {
+          return $this->displayResults("No sites found locally.");
+        }
 
         $em = $this->getDoctrine()->getManager();
 
@@ -90,6 +100,10 @@ class RefreshController extends Controller
                 $site->setDeactivated($wordpress_sites[$uri]['deleted']);
 
                 $plugins = $site->getPlugins();
+                // Check for no plugins found.
+                if (sizeof($plugins) == 0) {
+                  return $this->displayResults("No plugins found.");
+                }
                 foreach ($plugins as $plugin) {
                     $file = $plugin->getFile();
                     if (!in_array($file, $wordpress_sites[$uri]['plugins'])) {
