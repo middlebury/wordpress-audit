@@ -126,18 +126,22 @@ class RefreshController extends Controller
                 $theme = $this->getDoctrine()
                     ->getRepository('AppBundle:Theme')
                     ->findOneByName($wordpress_sites[$uri]['theme']);
+                $themeResults = "";
                 if (!empty($theme)) {
                     $site->setTheme($theme);
                     $theme->addSite($site);
+                    $themeResults = ", and theme is: " . $theme->getName();
 
                     $em->persist($theme);
+                } else {
+                  $themeResults = ", and no theme found.";
                 }
 
                 // Remove this from the list of site data returned from the
                 // network so that it doesn't get added again in the next loop.
                 unset($wordpress_sites[$uri]);
 
-                $results[] = 'Updated site record for ' . $uri;
+                $results[] = 'Updated site record for ' . $uri . $themeResults;
             } else {
                 // Do something about sites no longer existing.
                 // Only if we decide to keep notes on sites.
