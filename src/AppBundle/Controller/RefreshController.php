@@ -185,7 +185,7 @@ class RefreshController extends Controller
 
         $em->flush();
 
-        return $this->displayResults($results);
+        return $this->displayResults("Test");
     }
 
     /**
@@ -215,7 +215,7 @@ class RefreshController extends Controller
 
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
-                $theme->setName($name);
+                //$theme->setName($name);
 
                 if (!empty($wordpress_themes[$name]['version'])) {
                     $theme->setInstalledVersion($wordpress_themes[$name]['version']);
