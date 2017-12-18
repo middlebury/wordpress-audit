@@ -51,7 +51,7 @@ class RefreshController extends Controller
      */
     public function sitesAction()
     {
-        $results = array();
+        $results = array("Test");
 
         // The sites in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
@@ -197,7 +197,7 @@ class RefreshController extends Controller
 
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
-                $theme->setName($name);
+                //$theme->setName($name);
 
                 if (!empty($wordpress_themes[$name]['version'])) {
                     $theme->setInstalledVersion($wordpress_themes[$name]['version']);
