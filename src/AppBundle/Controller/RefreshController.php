@@ -45,39 +45,22 @@ class RefreshController extends Controller
         ]);
     }
 
-    public function displayResults($results) {
-      return $this->render('refresh.html.twig', [
-          'title' => "WordPress Sites Refreshed",
-          'results' => $results,
-      ]);
-    }
-
     /**
      * @Route("/refresh/sites", name="refresh_sites")
      * @Method("GET")
      */
     public function sitesAction()
     {
-        $results = array("Test");
+        $results = array();
 
         // The sites in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
         $wordpress_sites = $network->getSites();
 
-        // Check for no sites loaded.
-        if (sizeof($wordpress_sites) == 0) {
-          return $this->displayResults("No sites found remotely.  Check database connection");
-        }
-
         // The sites in our local application database.
         $sites = $this->getDoctrine()
             ->getRepository('AppBundle:Site')
             ->findAll();
-
-        // Check for no sites loaded.
-        if (sizeof($sites) == 0) {
-          return $this->displayResults("No sites found locally.");
-        }
 
         $em = $this->getDoctrine()->getManager();
 
@@ -100,10 +83,6 @@ class RefreshController extends Controller
                 $site->setDeactivated($wordpress_sites[$uri]['deleted']);
 
                 $plugins = $site->getPlugins();
-                // Check for no plugins found.
-                if (sizeof($plugins) == 0) {
-                  return $this->displayResults("No plugins found.");
-                }
                 foreach ($plugins as $plugin) {
                     $file = $plugin->getFile();
                     if (!in_array($file, $wordpress_sites[$uri]['plugins'])) {
@@ -185,7 +164,10 @@ class RefreshController extends Controller
 
         $em->flush();
 
-        return $this->displayResults($results);
+        return $this->render('refresh.html.twig', [
+            'title' => "WordPress Sites Refreshed",
+            'results' => $results,
+        ]);
     }
 
     /**
@@ -215,7 +197,7 @@ class RefreshController extends Controller
 
             if (in_array($name, array_keys($wordpress_themes))) {
                 $theme->setInstalled(1);
-                //$theme->setName($name);
+                $theme->setName($name);
 
                 if (!empty($wordpress_themes[$name]['version'])) {
                     $theme->setInstalledVersion($wordpress_themes[$name]['version']);
