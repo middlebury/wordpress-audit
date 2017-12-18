@@ -105,11 +105,11 @@ class RefreshController extends Controller
                 $theme = $this->getDoctrine()
                     ->getRepository('AppBundle:Theme')
                     ->findOneByName($wordpress_sites[$uri]['theme']);
-                $themeResult = ", and no theme data was found";
+                $themeResult = " and no theme data was found";
                 if (!empty($theme)) {
                     $site->setTheme($theme);
                     $theme->addSite($site);
-                    $themeResult = ", and theme was updated: " . $theme->getName();
+                    $themeResult = " and theme was updated: " . $theme->getName();
 
                     $em->persist($theme);
                 }
