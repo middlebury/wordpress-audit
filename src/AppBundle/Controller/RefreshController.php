@@ -60,6 +60,8 @@ class RefreshController extends Controller
     {
         $results = array();
 
+        asdf
+
         // The sites in our WordPress installation(s).
         $network = new Network($this->getParameter('wordpresses'));
         $wordpress_sites = $network->getSites();
