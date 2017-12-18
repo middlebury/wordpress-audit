@@ -219,6 +219,7 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $updates = unserialize($row['meta_value']);
+        alert('_site_transient_update_plugins successful');
 
         // active_sitewide_plugins stores a list of the plugins that are
         // activated on every site on this installation of WordPress and which
@@ -231,6 +232,8 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $network_activate = unserialize($row['meta_value']);
+        alert('active_sitewide_plugins successful');
+
 
         // pm_auto_activate_list stores a list of the plugins that are
         // activated automatically on all new sites, but which users are
@@ -243,6 +246,8 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $auto_activate = unserialize($row['meta_value']);
+        alert('pm_auto_activate_list successful');
+
 
         // pm_user_control_list stores a list of the plugins that users
         // are allowed to activate on their sites. Plugins which are not in this
@@ -255,6 +260,8 @@ class WordPress
         $statement->execute();
         $row = $statement->fetch();
         $user_activate = unserialize($row['meta_value']);
+        alert('pm_user_control_list successful');
+
 
         foreach ($installed as $plugin) {
             $record = array();
