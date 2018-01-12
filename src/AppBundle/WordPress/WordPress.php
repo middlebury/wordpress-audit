@@ -295,10 +295,10 @@ class WordPress
             if (in_array($plugin, array_keys($network_activate))) {
                 $record['permissions'][$this->domain] =
                     'Network Activate';
-            } else if (in_array($plugin, array_keys($auto_activate))) {
+            } else if (in_array($plugin, $auto_activate)) {
                 $record['permissions'][$this->domain] =
                     'Auto Activate';
-            } else if (in_array($plugin, array_keys($user_activate))) {
+            } else if (in_array($plugin, $user_activate)) {
                 $record['permissions'][$this->domain] =
                     'All Users';
             }
